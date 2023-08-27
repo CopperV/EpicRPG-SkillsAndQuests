@@ -1,0 +1,6 @@
+DB:
+  ip: "127.0.0.1"
+  port: "3306"
+  database: "base"
+  user: "root"
+  passwd: "root"

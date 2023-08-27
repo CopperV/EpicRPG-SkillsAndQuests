@@ -1,0 +1,16 @@
+name: EpicRPGSkillsAndQuests
+version: 2.0.0-ALPHA
+main: me.Vark123.EpicRPGSkillsAndQuests.Main
+author: Vark123
+depend: [CalendarEvents,MythicMobs,MultiWorld,EpicParty,NBTAPI,EpicRPG,EpicNPC]
+softdepend: [EpicRPGFishing]
+api-version: 1.18
+
+commands:
+  quests:
+    aliases: [quest, zadania, zadanie, misje, misja, questy, q]
+  zlecenie:
+    aliases: [zlecenia]
+  dungeon:
+    aliases: [dungeons, loch, lochy, raid, raids, rajd, rajdy]
+  questgm:
