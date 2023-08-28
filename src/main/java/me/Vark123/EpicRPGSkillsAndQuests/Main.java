@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class Main extends JavaPlugin {
-
+	
 	@Getter
 	private static Main inst;
 
