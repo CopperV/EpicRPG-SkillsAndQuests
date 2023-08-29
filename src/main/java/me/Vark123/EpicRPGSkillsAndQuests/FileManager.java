@@ -14,8 +14,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ClassRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.LevelRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.QuestRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ReputationRequirement;
 
 @Getter
 public final class FileManager {
@@ -83,7 +89,7 @@ public final class FileManager {
 	}
 	
 	private static void loadConfig() {
-		
+		Config.get().init();
 	}
 	
 	private static void loadAllQuests() {
@@ -105,9 +111,39 @@ public final class FileManager {
 					.forEach(slot -> {
 						if(!StringUtils.isNumeric(slot))
 							return;
+						int _slot = Integer.parseInt(slot) - 1;
 						String item = slots.getString(slot+".item");
+						
+						//TODO
+						//Przeniesienie ladowania wymagan
 						EpicItemManager.get().getItemById(item)
-							.ifPresent(epicItem -> items.put(Integer.parseInt(slot), epicItem));
+							.ifPresent(epicItem -> {
+								AEpicItem clone = epicItem.clone();
+								if(clone instanceof StatItem && slots.contains(slot+".max")) {
+									((StatItem)clone).setLimit(slots.getInt(slot+".max"));
+								}
+								if(clone instanceof LearnItem && slots.contains(slot+".wymagania")) {
+									slots.getStringList(slot+".wymagania").forEach(line -> {
+										String[] arr = line.split(": ");
+										switch(arr[0].toLowerCase()) {
+											case "quest":
+												((LearnItem)clone).getRequirements().add(new QuestRequirement(arr[1]));
+												break;
+											case "level":
+												((LearnItem)clone).getRequirements().add(new LevelRequirement(Integer.parseInt(arr[1])));
+												break;
+											case "klasa":
+												((LearnItem)clone).getRequirements().add(new ClassRequirement(ChatColor.translateAlternateColorCodes('&', arr[1])));
+												break;
+											case "reputation":
+												String[] rep = arr[1].split(";");
+												((LearnItem)clone).getRequirements().add(new ReputationRequirement(rep[0], Integer.parseInt(rep[1])));
+												break;
+										}
+									});
+								}
+								items.put(_slot, clone);
+							});
 					});
 				EpicNPC npc = new EpicNPC(name, title, size, items);
 				EpicNPCManager.get().registerNPC(npc);

@@ -31,7 +31,7 @@ public class EpicNPCMenuClickListener implements Listener {
 		if(!npc.getItemSlots().containsKey(slot))
 			return;
 		
-		npc.getItemSlots().get(slot).clickAction(p);
+		npc.getItemSlots().get(slot).clickAction(p, inv.getItem(slot), npc);
 	}
 
 }
