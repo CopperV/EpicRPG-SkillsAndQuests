@@ -3,6 +3,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Stats;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,6 +26,8 @@ public class KragStat extends StatItem {
 	public ItemStack getItem(Player p) {
 		ItemStack it = super.getItem(p);
 		RpgPlayer rpg = PlayerManager.getInstance().getRpgPlayer(p);
+		if(rpg.getStats().getKrag() + 1 < amount)
+			it.setType(Material.BLACK_TERRACOTTA);
 		if(rpg.getStats().getKrag() >= amount)
 			it = null;
 		return it;
@@ -35,7 +38,7 @@ public class KragStat extends StatItem {
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
 		switch(info.getType()) {
 			case BLACK_TERRACOTTA:
-				p.sendMessage(npc.getName()+"§r: §aNie spelniasz moich wymagan! Nie nauczy Ciebie tego!");
+				p.sendMessage(npc.getName()+"§r: §aNie spelniasz moich wymagan! Nie naucze Ciebie tego!");
 				return false;
 			case RED_TERRACOTTA:
 				p.sendMessage(npc.getName()+"§r: §aWroc, gdy zdobedziesz wiecej doswiadczenia!");

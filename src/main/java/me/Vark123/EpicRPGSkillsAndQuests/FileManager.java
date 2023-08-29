@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +17,12 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.StandardQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
-import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ClassRequirement;
-import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.LevelRequirement;
-import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.QuestRequirement;
-import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ReputationRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
 
 @Getter
 public final class FileManager {
@@ -93,7 +94,14 @@ public final class FileManager {
 	}
 	
 	private static void loadAllQuests() {
-		
+		Arrays.asList(questsDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				StandardQuest quest = new StandardQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new StandardQuestItem(quest));
+			});
 	}
 	
 	private static void loadNPC() {
@@ -114,8 +122,6 @@ public final class FileManager {
 						int _slot = Integer.parseInt(slot) - 1;
 						String item = slots.getString(slot+".item");
 						
-						//TODO
-						//Przeniesienie ladowania wymagan
 						EpicItemManager.get().getItemById(item)
 							.ifPresent(epicItem -> {
 								AEpicItem clone = epicItem.clone();
@@ -123,24 +129,8 @@ public final class FileManager {
 									((StatItem)clone).setLimit(slots.getInt(slot+".max"));
 								}
 								if(clone instanceof LearnItem && slots.contains(slot+".wymagania")) {
-									slots.getStringList(slot+".wymagania").forEach(line -> {
-										String[] arr = line.split(": ");
-										switch(arr[0].toLowerCase()) {
-											case "quest":
-												((LearnItem)clone).getRequirements().add(new QuestRequirement(arr[1]));
-												break;
-											case "level":
-												((LearnItem)clone).getRequirements().add(new LevelRequirement(Integer.parseInt(arr[1])));
-												break;
-											case "klasa":
-												((LearnItem)clone).getRequirements().add(new ClassRequirement(ChatColor.translateAlternateColorCodes('&', arr[1])));
-												break;
-											case "reputation":
-												String[] rep = arr[1].split(";");
-												((LearnItem)clone).getRequirements().add(new ReputationRequirement(rep[0], Integer.parseInt(rep[1])));
-												break;
-										}
-									});
+									List<String> lines = slots.getStringList(slot+".wymagania");
+									((LearnItem)clone).getRequirements().addAll(RequirementManager.generateRequirements(lines));
 								}
 								items.put(_slot, clone);
 							});

@@ -10,11 +10,12 @@ import me.Vark123.EpicRPGSkillsAndQuests.Requirements.IRequirement;
 
 //TODO
 //Implementacja questow
-public class QuestRequirement implements IRequirement {
+//Implementacja systemu graczy
+public class ActiveQuestRequirement implements IRequirement {
 
 	private String questId;
 	
-	public QuestRequirement(String questId) {
+	public ActiveQuestRequirement(String questId) {
 		this.questId = questId;
 	}
 	
@@ -27,8 +28,8 @@ public class QuestRequirement implements IRequirement {
 	public String getRequirementInfo() {
 		Optional<AQuest> quest = QuestManager.get().getQuestById(questId);
 		if(quest.isEmpty())
-			return "§cZadanie§r: BLAD [ZGLOS ADMINISTRATOROWI]";
-		return "§cZadanie: §r"+quest.get().getDisplay()+"§r";
+			return "§cWez zadanie§r: BLAD [ZGLOS ADMINISTRATOROWI]";
+		return "§cWez zadanie: §r"+quest.get().getDisplay()+"§r";
 	}
 
 }

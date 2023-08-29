@@ -34,7 +34,7 @@ public class ManaRegenerationItem extends SkillItem {
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
 		switch(info.getType()) {
 			case BLACK_TERRACOTTA:
-				p.sendMessage(npc.getName()+"§r: §aNie spelniasz moich wymagan! Nie nauczy Ciebie tego!");
+				p.sendMessage(npc.getName()+"§r: §aNie spelniasz moich wymagan! Nie naucze Ciebie tego!");
 				return false;
 			case RED_TERRACOTTA:
 				p.sendMessage(npc.getName()+"§r: §aWroc, gdy zdobedziesz wiecej doswiadczenia!");
