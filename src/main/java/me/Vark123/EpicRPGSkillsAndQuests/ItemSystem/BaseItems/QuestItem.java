@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
-import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 
 @Getter
@@ -54,19 +53,6 @@ public abstract class QuestItem extends AEpicItem {
 		it.setItemMeta(im);
 		
 		return it;
-	}
-
-	@Override
-	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
-		p.closeInventory();
-		switch(info.getType()) {
-			case GREEN_TERRACOTTA:
-				p.sendMessage("Biere tego questa ["+quest.getDisplay()+"§r]");
-				break;
-			default:
-				return false;
-		}
-		return true;
 	}
 	
 }

@@ -5,6 +5,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 
@@ -16,6 +17,8 @@ public class Main extends JavaPlugin {
 	
 	public static Economy eco;
 	public static Permission perm;
+	
+	private InventoryManager inventoryManager;
 
 	@Override
 	public void onEnable() {
@@ -25,6 +28,9 @@ public class Main extends JavaPlugin {
 		ListenerManager.registerListeners();
 		FileManager.init();
 		DatabaseManager.init();
+		
+		inventoryManager = new InventoryManager(inst);
+		inventoryManager.invoke();
 
 		checkEco();
 		checkPerm();
@@ -32,7 +38,12 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		
+		//TODO
+		//Zapisywanie graczy
+		Bukkit.getOnlinePlayers().forEach(p -> {
+			
+		});
+		DatabaseManager.clean();
 	}
 	
 	private boolean checkEco() {

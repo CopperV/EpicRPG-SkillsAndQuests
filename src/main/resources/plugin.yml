@@ -6,6 +6,9 @@ depend: [CalendarEvents,MythicMobs,MultiWorld,EpicParty,NBTAPI,EpicRPG,EpicNPC]
 softdepend: [EpicRPGFishing]
 api-version: 1.18
 
+libraries:
+  - io.github.rysefoxx.inventory:RyseInventory-Plugin:1.6.3
+
 commands:
   quests:
     aliases: [quest, zadania, zadanie, misje, misja, questy, q]
