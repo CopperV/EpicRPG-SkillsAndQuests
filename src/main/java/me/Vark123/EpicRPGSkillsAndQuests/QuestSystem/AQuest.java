@@ -46,7 +46,7 @@ public abstract class AQuest {
 			if(!StringUtils.isNumeric(key))
 				return;
 			Integer groupNum = Integer.parseInt(key);
-			taskGroups.put(groupNum, new TaskGroup(taskGroupsSection.getConfigurationSection(key)));
+			taskGroups.put(groupNum, new TaskGroup(taskGroupsSection.getConfigurationSection(key), this));
 		});
 	}
 	

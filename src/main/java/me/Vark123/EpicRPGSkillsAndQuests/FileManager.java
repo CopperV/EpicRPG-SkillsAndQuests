@@ -3,7 +3,9 @@ package me.Vark123.EpicRPGSkillsAndQuests;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
@@ -20,6 +23,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.StandardQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
@@ -138,6 +142,42 @@ public final class FileManager {
 				EpicNPC npc = new EpicNPC(name, title, size, items);
 				EpicNPCManager.get().registerNPC(npc);
 			});
+	}
+	
+	public static Collection<String> getPlayerCompletedQuests(Player p) {
+		String uid = p.getUniqueId().toString();
+		File file = new File(playerQuestsDir, uid+".yml");
+		if(!file.exists())
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new LinkedList<>();
+			}
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(file);
+		return fYml.getStringList("done");
+	}
+	
+	public static void savePlayer(Player p) {
+		String uid = p.getUniqueId().toString();
+		File file = new File(playerQuestsDir, uid+".yml");
+		if(!file.exists())
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(file);
+		PlayerManager.get().getQuestPlayer(p)
+			.ifPresent(qp -> {
+				fYml.set("done", qp.getCompletedQuests());
+			});
+		try {
+			fYml.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

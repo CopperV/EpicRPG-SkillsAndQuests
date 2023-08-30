@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.IRequirement;
 
-//TODO
-//Implementacja questow
 public class QuestRequirement implements IRequirement {
 
 	private String questId;
@@ -20,7 +20,11 @@ public class QuestRequirement implements IRequirement {
 	
 	@Override
 	public boolean checkRequirement(Player p) {
-		return true;
+		Optional<AQuest> quest = QuestManager.get().getQuestById(questId);
+		Optional<QuestPlayer> qp = PlayerManager.get().getQuestPlayer(p);
+		if(quest.isEmpty() || qp.isEmpty())
+			return false;
+		return qp.get().getCompletedQuests().contains(quest.get().getId());
 	}
 
 	@Override

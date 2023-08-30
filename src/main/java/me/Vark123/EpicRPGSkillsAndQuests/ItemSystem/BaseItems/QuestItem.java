@@ -46,6 +46,7 @@ public abstract class QuestItem extends AEpicItem {
 									EpicRPGSkillsAndQuestsAPI.get().getGreenInfo() 
 									: EpicRPGSkillsAndQuestsAPI.get().getRedInfo()));
 				});
+				im.setLore(lore);
 			}, () -> {
 				im.setDisplayName(quest.getDisplay());
 				im.setLore(quest.getLore());

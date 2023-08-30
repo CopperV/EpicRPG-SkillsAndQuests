@@ -1,5 +1,6 @@
 package me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.QuestItem;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 
 @Getter
@@ -25,6 +27,11 @@ public class StandardQuestItem extends QuestItem {
 		ItemStack it = super.getItem(p);
 		if(it == null)
 			return null;
+		
+		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
+			if(qp.getCompletedQuests().contains(quest.getId()))
+				it.setType(Material.RED_TERRACOTTA);
+		});
 		
 		ItemMeta im = it.getItemMeta();
 		switch(it.getType()) {
