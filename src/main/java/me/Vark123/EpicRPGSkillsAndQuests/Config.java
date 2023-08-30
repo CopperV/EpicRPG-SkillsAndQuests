@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import lombok.Getter;
+import me.Vark123.EpicRPG.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Rzemioslo.AlchemiaItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Rzemioslo.JubilerstwoItem;
@@ -35,6 +36,8 @@ public final class Config {
 
 	private static final Config conf = new Config();
 	
+	private String prefix;
+	
 	private Config() { }
 	
 	public static final Config get() {
@@ -42,6 +45,8 @@ public final class Config {
 	}
 	
 	public void init() {
+		this.prefix = Main.getInstance().getPrefix();
+		
 		EpicItemManager.get().registerItem(new AlchemiaItem(new LinkedList<>()));
 		EpicItemManager.get().registerItem(new JubilerstwoItem(new LinkedList<>()));
 		EpicItemManager.get().registerItem(new KowalstwoItem(new LinkedList<>()));

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 
 @Getter
@@ -15,6 +16,7 @@ public class PlayerQuest {
 	private Player player;
 	private AQuest quest;
 	private int stage;
+	@Setter
 	private Collection<PlayerTask> tasks;
 	
 }
