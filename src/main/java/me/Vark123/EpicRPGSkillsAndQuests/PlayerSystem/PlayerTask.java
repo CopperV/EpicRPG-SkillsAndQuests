@@ -1,5 +1,6 @@
 package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
@@ -21,11 +22,12 @@ public class PlayerTask {
 	private boolean completed;
 	
 	public void addProgress(int progress) {
-		
+		this.progress += progress;
 	}
 	
 	public void complete() {
-		
+		this.completed = true;
+		player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1.2f);
 	}
 	
 	public String getProgress() {

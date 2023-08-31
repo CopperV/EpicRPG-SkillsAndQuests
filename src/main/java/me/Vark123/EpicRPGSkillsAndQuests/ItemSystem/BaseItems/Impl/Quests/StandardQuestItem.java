@@ -4,10 +4,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -21,6 +23,8 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.Events.GiveTaskEvent;
 
 @Getter
 @Setter
@@ -74,20 +78,32 @@ public class StandardQuestItem extends QuestItem {
 	@Override
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
 		p.closeInventory();
+		QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
 		switch(info.getType()) {
 			case GREEN_TERRACOTTA:
-				QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
-				Collection<PlayerTask> playerTasks = quest.getTaskGroups().get(1)
-						.getTasks().stream()
-						.map(task -> new PlayerTask(p, quest, task, 0, false))
-						.collect(Collectors.toList());
-				PlayerQuest pQuest = new PlayerQuest(p, quest, 1, playerTasks);
-				qp.getActiveQuests().put(quest, pQuest);
-				p.sendTitle("§e§lROZPOCZALES ZADANIE", quest.getDisplay(), 5, 10, 15);
-				p.playSound(p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-				p.spawnParticle(Particle.TOTEM, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+				{
+					Collection<PlayerTask> playerTasks = quest.getTaskGroups().get(1)
+							.getTasks().stream()
+							.map(task -> new PlayerTask(p, quest, task, 0, false))
+							.collect(Collectors.toList());
+					PlayerQuest pQuest = new PlayerQuest(p, quest, 1, playerTasks);
+					qp.getActiveQuests().put(quest, pQuest);
+					p.sendTitle("§e§lROZPOCZALES ZADANIE", quest.getDisplay(), 5, 10, 15);
+					p.playSound(p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
+					p.spawnParticle(Particle.TOTEM, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+				}
 				break;
 			case YELLOW_TERRACOTTA:
+				PlayerQuest pQuest = qp.getActiveQuests().get(quest);
+				if(pQuest == null)
+					break;
+				pQuest.getTasks().stream()
+					.filter(pTask -> pTask.getTask() instanceof GiveTask
+						&& !pTask.isCompleted())
+					.forEach(pTask -> {
+						Event event = new GiveTaskEvent(p, pTask);
+						Bukkit.getPluginManager().callEvent(event);
+					});
 				p.sendMessage("Sprawdzam stan zadania "+quest.getDisplay());
 				break;
 			default:

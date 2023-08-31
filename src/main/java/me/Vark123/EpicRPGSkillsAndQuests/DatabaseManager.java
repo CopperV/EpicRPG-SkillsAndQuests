@@ -63,28 +63,10 @@ public final class DatabaseManager {
 				+ "task_progress INT,"
 				+ "task_complete BOOLEAN,"
 				+ "FOREIGN KEY (player_id) REFERENCES users(id));";
-//		String sql4 = "CREATE OR REPLACE PROCEDURE SavePlayerTask( "
-//				+ "IN playerId INT, "
-//				+ "IN questId TEXT, "
-//				+ "IN questStage INT, "
-//				+ "IN taskId TEXT, "
-//				+ "IN taskProgress INT, "
-//				+ "IN taskComplete TINYINT(1) "
-//				+ ") "
-//				+ "BEGIN "
-//				+ "DECLARE totalTasks INT DEFAULT 0; "
-//				+ "SELECT count(*) INTO totalTasks FROM quests WHERE quests.player_id = playerId AND quests.task_id LIKE taskId; "
-//				+ "IF totalTasks = 0 THEN "
-//				+ "INSERT INTO `quests` (player_id, quest_id, quest_stage, task_id, task_progress, task_complete) VALUES (playerId, questId, questStage, taskId, taskProgress, taskComplete); "
-//				+ "ELSE "
-//				+ "UPDATE `quests` SET task_progress = taskProgress, task_complete = taskComplete WHERE player_id = playerId AND task_id LIKE taskId; "
-//				+ "END IF; "
-//				+ "END ";
 		try {
 			c.createStatement().execute(sql1);
 			c.createStatement().execute(sql2);
 			c.createStatement().execute(sql3);
-//			c.createStatement().execute(sql4);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
