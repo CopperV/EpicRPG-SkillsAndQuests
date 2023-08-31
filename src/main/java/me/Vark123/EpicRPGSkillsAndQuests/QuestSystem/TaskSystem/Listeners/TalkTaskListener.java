@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import me.Vark123.EpicNPC.Events.EpicNpcInteractEvent;
@@ -12,7 +13,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 
 public class TalkTaskListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onClick(EpicNpcInteractEvent e) {
 		if(e.isCancelled())
 			return;
@@ -26,6 +27,7 @@ public class TalkTaskListener implements Listener {
 							&& !pTask.isCompleted()
 							&& pTask.getTask().getTarget().equals(name))
 					.forEach(pTask -> {
+						e.setCancelled(true);
 						((TalkTask)pTask.getTask()).getDialog().stream().forEach(line -> {
 							String msg = line.replace("%player%", p.getName());
 							msg = PlaceholderAPI.setPlaceholders(p, msg);

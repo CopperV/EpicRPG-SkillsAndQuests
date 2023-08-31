@@ -15,6 +15,7 @@ public class PlayerQuest {
 
 	private Player player;
 	private AQuest quest;
+	@Setter
 	private int stage;
 	@Setter
 	private Collection<PlayerTask> tasks;

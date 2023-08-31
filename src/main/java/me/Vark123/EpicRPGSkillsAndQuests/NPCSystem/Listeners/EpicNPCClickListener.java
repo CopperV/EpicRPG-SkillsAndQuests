@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import me.Vark123.EpicNPC.Events.EpicNpcInteractEvent;
@@ -9,7 +10,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
 
 public class EpicNPCClickListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onClick(EpicNpcInteractEvent e) {
 		if(e.isCancelled())
 			return;

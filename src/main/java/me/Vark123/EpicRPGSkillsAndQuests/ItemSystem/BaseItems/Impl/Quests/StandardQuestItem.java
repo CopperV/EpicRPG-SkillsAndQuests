@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.QuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
@@ -22,6 +23,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.Events.GiveTaskEvent;
@@ -64,6 +66,17 @@ public class StandardQuestItem extends QuestItem {
 				List<String> newLore = pQuest.getTasks().stream()
 						.map(pTask -> pTask.getProgress())
 						.collect(Collectors.toList());
+				TaskGroup taskGroup = quest.getTaskGroups().get(pQuest.getStage() + 1);
+				if(taskGroup != null && !taskGroup.getRequirements().isEmpty()) {
+					newLore.add(" ");
+					newLore.add("§c§l§nWYMAGANIA");
+					taskGroup.getRequirements().forEach(check -> {
+						newLore.add("§4§l» "+check.getRequirementInfo()+" "
+								+(check.checkRequirement(p) ? 
+										EpicRPGSkillsAndQuestsAPI.get().getGreenInfo() 
+										: EpicRPGSkillsAndQuestsAPI.get().getRedInfo()));
+					});
+				}
 				im.setLore(newLore);
 				im.setDisplayName("§aZadanie §r"+quest.getDisplay());
 				break;
@@ -104,7 +117,7 @@ public class StandardQuestItem extends QuestItem {
 						Event event = new GiveTaskEvent(p, pTask);
 						Bukkit.getPluginManager().callEvent(event);
 					});
-				p.sendMessage("Sprawdzam stan zadania "+quest.getDisplay());
+				qp.tryUpdateOrEndQuest(quest);
 				break;
 			default:
 				return false;

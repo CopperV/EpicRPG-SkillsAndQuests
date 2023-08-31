@@ -159,6 +159,63 @@ public final class DatabaseManager {
 		}
 	}
 	
+	public static void updatePlayerStageQuest(PlayerQuest pQuest) {
+		Player player = pQuest.getPlayer();
+		if(!isPlayerExistsInDatabase(player))
+			addPlayerToDatabase(player);
+		int id = getPlayerId(player);
+		if(id < 0)
+			return;
+
+		String questId = pQuest.getQuest().getId();
+		int questStage = pQuest.getStage();
+		String deleteQuery = "DELETE FROM quests WHERE player_id = "+id+" AND quest_id LIKE\""+questId+"\";";
+		
+		try {
+			try {
+				c.setAutoCommit(false);
+				
+				List<String> querys = new LinkedList<>();
+				pQuest.getTasks().stream().forEach(pTask -> {
+					String taskId = pTask.getTask().getId();
+					int progress = pTask.getIntProgress();
+					boolean complete = pTask.isCompleted();
+					String call = "CALL SavePlayerTask("+id+",\""+questId+"\","+questStage+","
+							+ "\""+taskId+"\","+progress+","+complete+");";
+					querys.add(call);
+				});
+				c.createStatement().executeUpdate(deleteQuery);
+				for(String query : querys)
+					c.createStatement().execute(query);
+				c.commit();
+			} catch(SQLException e) {
+				e.printStackTrace();
+				c.rollback();
+			} finally {
+				c.setAutoCommit(true);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void deletePlayerQuest(PlayerQuest pQuest) {
+		Player player = pQuest.getPlayer();
+		if(!isPlayerExistsInDatabase(player))
+			addPlayerToDatabase(player);
+		int id = getPlayerId(player);
+		if(id < 0)
+			return;
+
+		String questId = pQuest.getQuest().getId();
+		String deleteQuery = "DELETE FROM quests WHERE player_id = "+id+" AND quest_id LIKE\""+questId+"\";";
+		try {
+			c.createStatement().executeUpdate(deleteQuery);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static boolean isPlayerExistsInDatabase(Player p) {
 		String uid = p.getUniqueId().toString();
 		String sql = "SELECT id FROM users WHERE uuid LIKE \""+uid+"\";";
