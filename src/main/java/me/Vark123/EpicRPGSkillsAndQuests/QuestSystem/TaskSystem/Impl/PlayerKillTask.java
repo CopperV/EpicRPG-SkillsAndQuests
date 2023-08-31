@@ -33,7 +33,7 @@ public class PlayerKillTask extends ATask {
 
 	@Override
 	public String getProgess(PlayerTask pTask) {
-		String isCompleted = pTask.isCompleted() ? "§aWykonane" : "§c"+pTask.getProgress()+"§7/§c"+amount;
+		String isCompleted = pTask.isCompleted() ? "§aWykonane" : "§c"+pTask.getIntProgress()+"§7/§c"+amount;
 		String msg = message.replace("%stan%", isCompleted);
 		return  "§e"+msg;
 	}

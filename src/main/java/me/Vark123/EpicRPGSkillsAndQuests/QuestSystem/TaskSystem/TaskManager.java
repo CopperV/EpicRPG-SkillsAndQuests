@@ -1,6 +1,9 @@
 package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
@@ -22,12 +25,20 @@ public final class TaskManager {
 
 	private static final TaskManager inst = new TaskManager();
 	
+	private final Collection<ATask> tasks;
+	
 	private TaskManager() { 
-		
+		tasks = new HashSet<>();
 	}
 	
 	public static final TaskManager get() {
 		return inst;
+	}
+	
+	public Optional<ATask> getTaskById(String id) {
+		return tasks.stream()
+				.filter(task -> task.getId().equals(id))
+				.findFirst();
 	}
 	
 	public ATask generateTask(AQuest quest, ConfigurationSection section) {
@@ -102,6 +113,7 @@ public final class TaskManager {
 				return null;
 		}
 		
+		tasks.add(task);
 		return task;
 	}
 	

@@ -32,4 +32,8 @@ public class PlayerTask {
 		return task.getProgess(this);
 	}
 	
+	public int getIntProgress() {
+		return progress;
+	}
+	
 }
