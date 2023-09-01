@@ -4,8 +4,10 @@ import org.bukkit.Bukkit;
 
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners.EpicNPCClickListener;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners.EpicNPCMenuClickListener;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerDeathListener;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerJoinListener;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerQuitListener;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerWorldChangeListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FindTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FishTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.GiveTaskListener;
@@ -27,6 +29,8 @@ public final class ListenerManager {
 
 		Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new PlayerDeathListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new PlayerWorldChangeListener(), inst);
 		
 		Bukkit.getPluginManager().registerEvents(new FindTaskListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new FishTaskListener(), inst);

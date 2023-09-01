@@ -23,6 +23,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
@@ -99,8 +100,13 @@ public class StandardQuestItem extends QuestItem {
 							.getTasks().stream()
 							.map(task -> new PlayerTask(p, quest, task, 0, false))
 							.collect(Collectors.toList());
+					
 					PlayerQuest pQuest = new PlayerQuest(p, quest, 1, playerTasks);
 					qp.getActiveQuests().put(quest, pQuest);
+					
+					quest.getTaskGroups().get(1).getEventsByType(EventCall.START)
+						.ifPresent(event -> event.executeEvent(pQuest));
+					
 					p.sendTitle("§e§lROZPOCZALES ZADANIE", quest.getDisplay(), 5, 10, 15);
 					p.playSound(p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
 					p.spawnParticle(Particle.TOTEM, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);

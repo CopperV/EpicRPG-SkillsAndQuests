@@ -1,6 +1,7 @@
 package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class TaskGroup {
 	private Collection<ATask> tasks;
 	private Collection<IPrize> prize;
 	private Collection<IRequirement> requirements;
+	private Collection<QuestEvent> events;
 	
 	public TaskGroup(ConfigurationSection groupSection, AQuest quest) {
 		this.quest = quest;
@@ -42,8 +44,31 @@ public class TaskGroup {
 				return;
 			tasks.add(task);
 		});
+		
 		prize = PrizeManager.generatePrizes(groupSection.getStringList("prize"));
 		requirements = RequirementManager.generateRequirements(groupSection.getStringList("require"));
+	
+		events = new HashSet<>();
+		if(groupSection.contains("start"))
+			events.add(new QuestEvent(this, EventCall.START, groupSection.getStringList("start")));
+		if(groupSection.contains("end"))
+			events.add(new QuestEvent(this, EventCall.END, groupSection.getStringList("end")));
+		if(groupSection.contains("disconnect"))
+			events.add(new QuestEvent(this, EventCall.DISCONNECT, groupSection.getStringList("disconnect")));
+		if(groupSection.contains("join"))
+			events.add(new QuestEvent(this, EventCall.JOIN, groupSection.getStringList("join")));
+		if(groupSection.contains("death"))
+			events.add(new QuestEvent(this, EventCall.DEATH, groupSection.getStringList("death")));
+		if(groupSection.contains("world-change"))
+			events.add(new QuestEvent(this, EventCall.WORLD_CHANGE, groupSection.getStringList("world-change")));
+		if(groupSection.contains("complete"))
+			events.add(new QuestEvent(this, EventCall.COMPLETE, groupSection.getStringList("complete")));
+	}
+	
+	public Optional<QuestEvent> getEventsByType(EventCall call) {
+		return events.stream()
+				.filter(event -> event.getCallType().equals(call))
+				.findFirst();
 	}
 	
 	public Optional<String> getMessage() {

@@ -4,16 +4,20 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.DatabaseManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Events.QuestEndEvent;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @Getter
@@ -43,6 +47,9 @@ public class QuestPlayer {
 						msg = PlaceholderAPI.setPlaceholders(player, msg);
 						player.sendMessage("§4§l» §r"+msg);
 					});
+				
+				oldTaskGroup.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(pQuest));
+				
 				if(newTaskGroup == null) {
 					oldTaskGroup.getPrize().forEach(prize -> prize.givePrize(player));
 					endQuest(quest);
@@ -62,6 +69,10 @@ public class QuestPlayer {
 		PlayerQuest pQuest = activeQuests.get(quest);
 		if(pQuest == null)
 			return;
+		
+		quest.getTaskGroups().get(pQuest.getStage()).getEventsByType(EventCall.COMPLETE)
+			.ifPresent(event -> event.executeEvent(pQuest));
+		
 		int newStage = pQuest.getStage() + 1;
 		TaskGroup taskGroup = quest.getTaskGroups().get(newStage);
 		Collection<PlayerTask> pTasks = taskGroup.getTasks().stream()
@@ -70,6 +81,8 @@ public class QuestPlayer {
 		
 		pQuest.setStage(newStage);
 		pQuest.setTasks(pTasks);
+		
+		taskGroup.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(pQuest));
 		
 		DatabaseManager.updatePlayerStageQuest(pQuest);
 		
@@ -82,10 +95,16 @@ public class QuestPlayer {
 		PlayerQuest pQuest = activeQuests.get(quest);
 		if(pQuest == null)
 			return;
+		
+		quest.getTaskGroups().get(pQuest.getStage()).getEventsByType(EventCall.END)
+			.ifPresent(event -> event.executeEvent(pQuest));
+		
 		TaskGroup taskGroup = quest.getTaskGroups().get(newStage);
 		Collection<PlayerTask> pTasks = taskGroup.getTasks().stream()
 				.map(task -> new PlayerTask(player, quest, task, 0, false))
 				.collect(Collectors.toList());
+		
+		taskGroup.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(pQuest));
 		
 		pQuest.setStage(newStage);
 		pQuest.setTasks(pTasks);
@@ -98,6 +117,9 @@ public class QuestPlayer {
 		if(pQuest == null)
 			return;
 		
+		quest.getTaskGroups().get(pQuest.getStage()).getEventsByType(EventCall.COMPLETE)
+			.ifPresent(event -> event.executeEvent(pQuest));
+		
 		DatabaseManager.deletePlayerQuest(pQuest);
 		activeQuests.remove(quest);
 		completedQuests.add(quest.getId());
@@ -108,12 +130,18 @@ public class QuestPlayer {
 		player.spawnParticle(Particle.SOUL_FIRE_FLAME, player.getLocation().add(0,1,0), 15, 0.75, 1, 0.75, 0.15);
 		
 		quest.getPrize().forEach(prize -> prize.givePrize(player));
+		
+		Event event = new QuestEndEvent(pQuest);
+		Bukkit.getPluginManager().callEvent(event);
 	}
 	
 	public void removeQuest(AQuest quest) {
 		PlayerQuest pQuest = activeQuests.get(quest);
 		if(pQuest == null)
 			return;
+		
+		quest.getTaskGroups().get(pQuest.getStage()).getEventsByType(EventCall.END)
+			.ifPresent(event -> event.executeEvent(pQuest));
 		
 		DatabaseManager.deletePlayerQuest(pQuest);
 		activeQuests.remove(quest);
