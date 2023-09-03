@@ -15,7 +15,6 @@ public class QuestCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(!cmd.getName().equalsIgnoreCase("quests"))
 			return false;
-//		sender.sendMessage("Odpalam liste questow");
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(Config.get().getPrefix()+" §cTylko gracz moze uzywac tej komendy!");
 			return false;

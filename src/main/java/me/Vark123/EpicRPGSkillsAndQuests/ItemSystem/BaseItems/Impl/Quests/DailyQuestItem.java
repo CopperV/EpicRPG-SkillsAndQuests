@@ -20,7 +20,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.DailyPlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyController;
@@ -44,7 +44,7 @@ public class DailyQuestItem extends QuestItem {
 			it.setType(Material.BLACK_TERRACOTTA);
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()
-				.filter(pQuest -> pQuest instanceof DailyPlayerQuest
+				.filter(pQuest -> pQuest instanceof PlayerDailyQuest
 						&& !pQuest.getQuest().equals(quest))
 				.findAny()
 				.ifPresent(pQuest -> it.setType(Material.BLACK_TERRACOTTA));
@@ -58,7 +58,7 @@ public class DailyQuestItem extends QuestItem {
 				break;
 			case YELLOW_TERRACOTTA:
 				QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
-				DailyPlayerQuest pQuest = (DailyPlayerQuest) qp.getActiveQuests().get(quest);
+				PlayerDailyQuest pQuest = (PlayerDailyQuest) qp.getActiveQuests().get(quest);
 				List<String> newLore = pQuest.getTasks().stream()
 						.map(pTask -> pTask.getProgress())
 						.collect(Collectors.toList());
@@ -84,7 +84,7 @@ public class DailyQuestItem extends QuestItem {
 							.map(task -> new PlayerTask(p, quest, task, 0, false))
 							.collect(Collectors.toList());
 					
-					APlayerQuest pQuest = new DailyPlayerQuest(p, quest, 1, playerTasks);
+					APlayerQuest pQuest = new PlayerDailyQuest(p, quest, 1, playerTasks);
 					qp.getActiveQuests().put(quest, pQuest);
 					
 					quest.getTaskGroups().get(1).getEventsByType(EventCall.START)

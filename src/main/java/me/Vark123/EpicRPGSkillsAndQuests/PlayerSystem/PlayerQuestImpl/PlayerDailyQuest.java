@@ -17,9 +17,9 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyController;
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class DailyPlayerQuest extends APlayerQuest {
+public class PlayerDailyQuest extends APlayerQuest {
 
-	public DailyPlayerQuest(Player player, AQuest quest, int stage, Collection<PlayerTask> tasks) {
+	public PlayerDailyQuest(Player player, AQuest quest, int stage, Collection<PlayerTask> tasks) {
 		super(player, quest, stage, tasks);
 	}
 

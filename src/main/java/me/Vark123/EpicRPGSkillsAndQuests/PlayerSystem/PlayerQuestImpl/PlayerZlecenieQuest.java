@@ -20,11 +20,11 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @Getter
-public class ZleceniePlayerQuest extends APlayerQuest {
+public class PlayerZlecenieQuest extends APlayerQuest {
 
 	private List<TaskGroup> localTaskGroups;
 	
-	public ZleceniePlayerQuest(Player player, AQuest quest, int stage,
+	public PlayerZlecenieQuest(Player player, AQuest quest, int stage,
 			Collection<PlayerTask> tasks, List<TaskGroup> localTaskGroups) {
 		super(player, quest, stage, tasks);
 		this.localTaskGroups = localTaskGroups;

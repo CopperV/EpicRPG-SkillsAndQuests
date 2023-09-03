@@ -14,19 +14,17 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 public class PlayerTask {
 
 	private Player player;
-	private AQuest quest;
-	private ATask task;
+	protected AQuest quest;
+	protected ATask task;
 	@Setter
-	private int progress;
+	protected int progress;
 	@Setter
-	private boolean completed;
+	protected boolean completed;
 	
 	public void addProgress(int progress) {
 		this.progress += progress;
 	}
 	
-	//TODO
-	//Blad z aktualizacja na zleceniach
 	public void complete() {
 		this.completed = true;
 		player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1.2f);

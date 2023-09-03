@@ -37,6 +37,7 @@ public class Main extends JavaPlugin {
 		ListenerManager.registerListeners();
 		FileManager.init();
 		DatabaseManager.init();
+		FileManager.loadWorldQuests();
 
 		checkEco();
 		checkPerm();
@@ -49,6 +50,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getOnlinePlayers().forEach(p -> {
 			
 		});
+		FileManager.saveWorldQuests();
 		DatabaseManager.clean();
 		FileManager.save();
 	}

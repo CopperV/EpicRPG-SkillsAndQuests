@@ -21,7 +21,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.ZleceniePlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
@@ -45,7 +45,7 @@ public class ZlecenieQuestItem extends QuestItem {
 			it.setType(Material.BLACK_TERRACOTTA);
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()
-				.filter(pQuest -> pQuest instanceof ZleceniePlayerQuest
+				.filter(pQuest -> pQuest instanceof PlayerZlecenieQuest
 						&& !pQuest.getQuest().equals(quest))
 				.findAny()
 				.ifPresent(pQuest -> it.setType(Material.BLACK_TERRACOTTA));
@@ -64,7 +64,7 @@ public class ZlecenieQuestItem extends QuestItem {
 				break;
 			case YELLOW_TERRACOTTA:
 				QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
-				ZleceniePlayerQuest pQuest = (ZleceniePlayerQuest) qp.getActiveQuests().get(quest);
+				PlayerZlecenieQuest pQuest = (PlayerZlecenieQuest) qp.getActiveQuests().get(quest);
 				List<String> newLore = pQuest.getTasks().stream()
 						.map(pTask -> pTask.getProgress())
 						.collect(Collectors.toList());
@@ -105,7 +105,7 @@ public class ZlecenieQuestItem extends QuestItem {
 							.map(task -> new PlayerTask(p, quest, task, 0, false))
 							.collect(Collectors.toList());
 					
-					APlayerQuest pQuest = new ZleceniePlayerQuest(p, quest, 0, playerTasks, taskGroups);
+					APlayerQuest pQuest = new PlayerZlecenieQuest(p, quest, 0, playerTasks, taskGroups);
 					qp.getActiveQuests().put(quest, pQuest);
 					
 					taskGroups.get(0).getEventsByType(EventCall.START)

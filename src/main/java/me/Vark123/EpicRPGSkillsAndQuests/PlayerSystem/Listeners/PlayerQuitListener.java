@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.DatabaseManager;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.ZleceniePlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
@@ -35,7 +35,7 @@ public class PlayerQuitListener implements Listener {
 				taskGroup.getEventsByType(EventCall.DISCONNECT).ifPresent(event -> event.executeEvent(pQuest));
 			});
 			qp.getActiveQuests().values().stream()
-				.filter(pQuest -> pQuest instanceof ZleceniePlayerQuest)
+				.filter(pQuest -> pQuest instanceof PlayerZlecenieQuest)
 				.findFirst()
 				.ifPresent(pQuest -> {
 					ZlecenieController.get().addZlecenieCooldown(p, 20*60*15);

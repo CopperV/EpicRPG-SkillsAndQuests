@@ -21,9 +21,10 @@ import me.Vark123.EpicRPGSkillsAndQuests.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.DailyPlayerQuest;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.StandardPlayerQuest;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.ZleceniePlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerWorldQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 
 @Getter
@@ -91,12 +92,14 @@ public final class QuestMenuManager {
 					AQuest quest = pQuest.getQuest();
 					
 					ItemMeta im = questItem.getItemMeta();
-					if(pQuest instanceof StandardPlayerQuest)
+					if(pQuest instanceof PlayerStandardQuest)
 						im.setDisplayName("§a§lZadanie§r: "+quest.getDisplay());
-					else if(pQuest instanceof ZleceniePlayerQuest)
+					else if(pQuest instanceof PlayerZlecenieQuest)
 						im.setDisplayName("§e§lZlecenie§r: "+quest.getDisplay());
-					else if(pQuest instanceof DailyPlayerQuest)
+					else if(pQuest instanceof PlayerDailyQuest)
 						im.setDisplayName(quest.getDisplay());
+					else if(pQuest instanceof PlayerWorldQuest)
+						im.setDisplayName("§d§lZadanie swiatowe§r: "+quest.getDisplay());
 					List<String> lore = pQuest.getTasks().stream()
 							.map(pTask -> pTask.getProgress())
 							.collect(Collectors.toList());

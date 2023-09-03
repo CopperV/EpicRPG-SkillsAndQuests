@@ -32,7 +32,7 @@ public class GiveTaskListener implements Listener {
 				continue;
 			if(!it.hasItemMeta() || !it.getItemMeta().hasDisplayName())
 				continue;
-			if(!it.getItemMeta().getDisplayName().equals(target))
+			if(!it.getItemMeta().getDisplayName().equalsIgnoreCase(target))
 				continue;
 			if(goalAmount > presentAmount + giveAmount + it.getAmount()) {
 				giveAmount += it.getAmount();

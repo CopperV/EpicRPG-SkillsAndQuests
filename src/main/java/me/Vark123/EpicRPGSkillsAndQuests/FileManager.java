@@ -35,6 +35,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.WorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyController;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.WorldQuestController;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
 
 @Getter
@@ -230,6 +231,31 @@ public final class FileManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void loadWorldQuests() {
+		WorldQuestController.get();
+		QuestManager.get().getQuests().stream()
+			.filter(quest -> quest instanceof WorldQuest
+					&& ((WorldQuest) quest).isCompleted())
+			.map(quest -> quest.getId())
+			.forEach(WorldQuestController.get().getCompletedQuests()::add);
+	}
+	
+	public static void saveWorldQuests() {
+		DatabaseManager.saveWorldQuests();
+		WorldQuestController.get().getCompletedQuests().stream()
+			.map(id -> new File(worldQuestsDir, id+".yml"))
+			.filter(f -> f.exists())
+			.forEach(f -> {
+				YamlConfiguration fYml = YamlConfiguration.loadConfiguration(f);
+				fYml.set("completed", true);
+				try {
+					fYml.save(f);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
 	}
 	
 }

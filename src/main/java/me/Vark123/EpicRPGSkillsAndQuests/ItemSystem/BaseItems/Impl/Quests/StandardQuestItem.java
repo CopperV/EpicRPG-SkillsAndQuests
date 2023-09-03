@@ -22,7 +22,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.StandardPlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
@@ -94,7 +94,7 @@ public class StandardQuestItem extends QuestItem {
 							.map(task -> new PlayerTask(p, quest, task, 0, false))
 							.collect(Collectors.toList());
 					
-					APlayerQuest pQuest = new StandardPlayerQuest(p, quest, 1, playerTasks);
+					APlayerQuest pQuest = new PlayerStandardQuest(p, quest, 1, playerTasks);
 					qp.getActiveQuests().put(quest, pQuest);
 					
 					quest.getTaskGroups().get(1).getEventsByType(EventCall.START)

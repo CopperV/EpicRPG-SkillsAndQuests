@@ -20,9 +20,9 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Events.QuestEndEvent;
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class StandardPlayerQuest extends APlayerQuest {
+public class PlayerStandardQuest extends APlayerQuest {
 
-	public StandardPlayerQuest(Player player, AQuest quest, int stage, Collection<PlayerTask> tasks) {
+	public PlayerStandardQuest(Player player, AQuest quest, int stage, Collection<PlayerTask> tasks) {
 		super(player, quest, stage, tasks);
 	}
 
