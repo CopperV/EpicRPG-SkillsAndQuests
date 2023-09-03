@@ -7,6 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
 import lombok.Getter;
+import me.nikl.calendarevents.CalendarEvents;
+import me.nikl.calendarevents.CalendarEventsApi;
 import net.milkbowl.vault.economy.Economy;
 
 @Getter
@@ -19,18 +21,22 @@ public class Main extends JavaPlugin {
 	public static Permission perm;
 	
 	private InventoryManager inventoryManager;
+	
+	private CalendarEventsApi calendar;
 
 	@Override
 	public void onEnable() {
 		inst = this;
 		
+		inventoryManager = new InventoryManager(inst);
+		inventoryManager.invoke();
+		CalendarEvents calend = (CalendarEvents) Bukkit.getPluginManager().getPlugin("CalendarEvents");
+		calendar = calend.getApi();
+		
 		CommandManager.setExecutors();
 		ListenerManager.registerListeners();
 		FileManager.init();
 		DatabaseManager.init();
-		
-		inventoryManager = new InventoryManager(inst);
-		inventoryManager.invoke();
 
 		checkEco();
 		checkPerm();
@@ -44,6 +50,7 @@ public class Main extends JavaPlugin {
 			
 		});
 		DatabaseManager.clean();
+		FileManager.save();
 	}
 	
 	private boolean checkEco() {

@@ -15,7 +15,7 @@ import io.github.rysefoxx.inventory.plugin.other.EventCreator;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.Config;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 
 @Getter
@@ -69,7 +69,7 @@ public final class QuestMenuClickEvents {
 						viewer.closeInventory();
 						return;
 					}
-					PlayerQuest pQuest = qp.getActiveQuests().get(quest);
+					APlayerQuest pQuest = qp.getActiveQuests().get(quest);
 					QuestMenuManager.get().openQuestInfoMenu(viewer, p, pQuest);
 				}, () -> {
 					viewer.sendMessage(Config.get().getPrefix()+" §cQuset o ID §7"+questId+" §cnie istnieje!");

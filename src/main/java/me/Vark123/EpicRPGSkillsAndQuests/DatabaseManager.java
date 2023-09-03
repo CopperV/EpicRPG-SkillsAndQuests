@@ -14,8 +14,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.DailyPlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.StandardPlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.TaskManager;
@@ -63,10 +65,18 @@ public final class DatabaseManager {
 				+ "task_progress INT,"
 				+ "task_complete BOOLEAN,"
 				+ "FOREIGN KEY (player_id) REFERENCES users(id));";
+		String sql4 = "CREATE TABLE IF NOT EXISTS world_quests ("
+				+ "id INT AUTO_INCREMENT PRIMARY KEY,"
+				+ "quest_id TEXT,"
+				+ "quest_stage INT,"
+				+ "task_id TEXT,"
+				+ "task_progress INT,"
+				+ "task_complete BOOLEAN);";
 		try {
 			c.createStatement().execute(sql1);
 			c.createStatement().execute(sql2);
 			c.createStatement().execute(sql3);
+			c.createStatement().execute(sql4);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -80,10 +90,8 @@ public final class DatabaseManager {
 		}
 	}
 	
-	//TODO
-	//Add daily
-	public static Map<AQuest, PlayerQuest> getPlayerActiveQuests(Player player) {
-		Map<AQuest, PlayerQuest> toReturn = new LinkedHashMap<>();
+	public static Map<AQuest, APlayerQuest> getPlayerActiveQuests(Player player) {
+		Map<AQuest, APlayerQuest> toReturn = new LinkedHashMap<>();
 		
 		if(!isPlayerExistsInDatabase(player))
 			addPlayerToDatabase(player);
@@ -102,7 +110,30 @@ public final class DatabaseManager {
 				boolean complete = set.getBoolean("task_complete");
 				QuestManager.get().getQuestById(questId).ifPresent(quest -> {
 					TaskManager.get().getTaskById(taskId).ifPresent(task -> {
-						PlayerQuest pQuest = toReturn.getOrDefault(quest, new PlayerQuest(player, quest, stage, new LinkedList<>()));
+						APlayerQuest pQuest = toReturn.getOrDefault(quest, new StandardPlayerQuest(player, quest, stage, new LinkedList<>()));
+						PlayerTask pTask = new PlayerTask(player, quest, task, progress, complete);
+						pQuest.getTasks().add(pTask);
+						toReturn.put(quest, pQuest);
+					});
+				});
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return toReturn;
+		}
+		
+		sql = "SELECT * FROM `daily` WHERE player_id = "+id+";";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			while(set.next()) {
+				String questId = set.getString("quest_id");
+				int stage = set.getInt("quest_stage");
+				String taskId = set.getString("task_id");
+				int progress = set.getInt("task_progress");
+				boolean complete = set.getBoolean("task_complete");
+				QuestManager.get().getQuestById(questId).ifPresent(quest -> {
+					TaskManager.get().getTaskById(taskId).ifPresent(task -> {
+						APlayerQuest pQuest = toReturn.getOrDefault(quest, new DailyPlayerQuest(player, quest, stage, new LinkedList<>()));
 						PlayerTask pTask = new PlayerTask(player, quest, task, progress, complete);
 						pQuest.getTasks().add(pTask);
 						toReturn.put(quest, pQuest);
@@ -128,14 +159,21 @@ public final class DatabaseManager {
 		PlayerManager.get().getQuestPlayer(player)
 			.ifPresent(qp -> {
 				qp.getActiveQuests().values().stream().forEach(pQuest -> {
+					if(!(pQuest instanceof StandardPlayerQuest || pQuest instanceof DailyPlayerQuest))
+						return;
 					String questId = pQuest.getQuest().getId();
 					int questStage = pQuest.getStage();
 					pQuest.getTasks().stream().forEach(pTask -> {
 						String taskId = pTask.getTask().getId();
 						int progress = pTask.getIntProgress();
 						boolean complete = pTask.isCompleted();
-						String call = "CALL SavePlayerTask("+id+",\""+questId+"\","+questStage+","
+						String call;
+						if(pQuest instanceof StandardPlayerQuest)
+							call = "CALL SavePlayerTask("+id+",\""+questId+"\","+questStage+","
 								+ "\""+taskId+"\","+progress+","+complete+");";
+						else
+							call = "CALL SavePlayerDaily("+id+",\""+questId+"\","+questStage+","
+									+ "\""+taskId+"\","+progress+","+complete+");";
 						querys.add(call);
 					});
 				});
@@ -159,7 +197,7 @@ public final class DatabaseManager {
 		}
 	}
 	
-	public static void updatePlayerStageQuest(PlayerQuest pQuest) {
+	public static void updatePlayerStageQuest(APlayerQuest pQuest) {
 		Player player = pQuest.getPlayer();
 		if(!isPlayerExistsInDatabase(player))
 			addPlayerToDatabase(player);
@@ -199,7 +237,7 @@ public final class DatabaseManager {
 		}
 	}
 	
-	public static void deletePlayerQuest(PlayerQuest pQuest) {
+	public static void deletePlayerQuest(APlayerQuest pQuest) {
 		Player player = pQuest.getPlayer();
 		if(!isPlayerExistsInDatabase(player))
 			addPlayerToDatabase(player);
@@ -209,6 +247,21 @@ public final class DatabaseManager {
 
 		String questId = pQuest.getQuest().getId();
 		String deleteQuery = "DELETE FROM quests WHERE player_id = "+id+" AND quest_id LIKE\""+questId+"\";";
+		try {
+			c.createStatement().executeUpdate(deleteQuery);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void deletePlayerDaily(Player player) {
+		if(!isPlayerExistsInDatabase(player))
+			addPlayerToDatabase(player);
+		int id = getPlayerId(player);
+		if(id < 0)
+			return;
+
+		String deleteQuery = "DELETE FROM daily WHERE player_id = "+id+";";
 		try {
 			c.createStatement().executeUpdate(deleteQuery);
 		} catch (SQLException e) {

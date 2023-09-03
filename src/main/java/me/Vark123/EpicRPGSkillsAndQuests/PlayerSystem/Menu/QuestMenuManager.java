@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Menu;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,12 @@ import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.DailyPlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.StandardPlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.ZleceniePlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 
 @Getter
 public final class QuestMenuManager {
@@ -58,7 +63,7 @@ public final class QuestMenuManager {
 			.open(viewer);
 	}
 	
-	public void openQuestInfoMenu(Player viewer, Player player, PlayerQuest pQuest) {
+	public void openQuestInfoMenu(Player viewer, Player player, APlayerQuest pQuest) {
 		Optional<QuestPlayer> oQp = PlayerManager.get().getQuestPlayer(player);
 		if(oQp.isEmpty())
 			return;
@@ -83,17 +88,27 @@ public final class QuestMenuManager {
 				MutableInt slot = new MutableInt();
 				qp.getActiveQuests().values().forEach(pQuest -> {
 					ItemStack questItem = new ItemStack(Material.KNOWLEDGE_BOOK);
+					AQuest quest = pQuest.getQuest();
 					
 					ItemMeta im = questItem.getItemMeta();
-					im.setDisplayName("§a§lZadanie§r: "+pQuest.getQuest().getDisplay());
-					im.setLore(pQuest.getTasks().stream()
+					if(pQuest instanceof StandardPlayerQuest)
+						im.setDisplayName("§a§lZadanie§r: "+quest.getDisplay());
+					else if(pQuest instanceof ZleceniePlayerQuest)
+						im.setDisplayName("§e§lZlecenie§r: "+quest.getDisplay());
+					else if(pQuest instanceof DailyPlayerQuest)
+						im.setDisplayName(quest.getDisplay());
+					List<String> lore = pQuest.getTasks().stream()
 							.map(pTask -> pTask.getProgress())
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList());
+					lore.add(0, " ");
+					lore.add(0, "§eID: §7[§f"+quest.getId()+"§7]");
+					lore.add(0, "§eZlecenodawca: §r"+quest.getQuestGiver());
+					im.setLore(lore);
 					questItem.setItemMeta(im);
 					
 					NBTItem nbt = new NBTItem(questItem);
 					nbt.setString("quest-owner", qp.getPlayer().getUniqueId().toString());
-					nbt.setString("quest-id", pQuest.getQuest().getId());
+					nbt.setString("quest-id", quest.getId());
 					nbt.applyNBT(questItem);
 					
 					contents.set(slot.getAndIncrement(), questItem);
@@ -102,7 +117,7 @@ public final class QuestMenuManager {
 		};
 	}
 	
-	private InventoryProvider getQuestInfoProvider(QuestPlayer qp, PlayerQuest pQuest) {
+	private InventoryProvider getQuestInfoProvider(QuestPlayer qp, APlayerQuest pQuest) {
 		return new InventoryProvider() {
 			@Override
 			public void init(Player player, InventoryContents contents) {

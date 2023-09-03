@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
@@ -20,12 +22,19 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DailyQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.StandardQuestItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.WorldQuestItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.ZlecenieQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.WorldQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyController;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
 
 @Getter
@@ -95,6 +104,12 @@ public final class FileManager {
 	
 	private static void loadConfig() {
 		Config.get().init();
+		Collection<UUID> dailyDone = YamlConfiguration.loadConfiguration(daily)
+				.getStringList("done")
+				.stream()
+				.map(UUID::fromString)
+				.collect(Collectors.toSet());
+		DailyController.get().getDoneDaily().addAll(dailyDone);
 	}
 	
 	private static void loadAllQuests() {
@@ -105,6 +120,30 @@ public final class FileManager {
 				StandardQuest quest = new StandardQuest(fYml);
 				QuestManager.get().registerQuest(quest);
 				EpicItemManager.get().registerItem(new StandardQuestItem(quest));
+			});
+		Arrays.asList(zleceniaDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				ZlecenieQuest quest = new ZlecenieQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new ZlecenieQuestItem(quest));
+			});
+		Arrays.asList(dailyDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				DailyQuest quest = new DailyQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new DailyQuestItem(quest));
+			});
+		Arrays.asList(worldQuestsDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				WorldQuest quest = new WorldQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new WorldQuestItem(quest));
 			});
 	}
 	
@@ -175,6 +214,19 @@ public final class FileManager {
 			});
 		try {
 			fYml.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void save() {
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(daily);
+		fYml.set("done", DailyController.get().getDoneDaily()
+				.stream()
+				.map(uid -> uid.toString())
+				.collect(Collectors.toList()));
+		try {
+			fYml.save(daily);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -30,7 +30,7 @@ public class PointsTask extends ATask {
 
 	@Override
 	public String getProgess(PlayerTask pTask) {
-		String isCompleted = pTask.isCompleted() ? "§aWykonane" : "§c"+String.format("%.2f", (double)pTask.getIntProgress()/(double)amount)+"%";
+		String isCompleted = pTask.isCompleted() ? "§aWykonane" : "§c"+String.format("%.2f", ((double)pTask.getIntProgress()/(double)amount)*100.)+"%";
 		String msg = message.replace("%stan%", isCompleted);
 		return  "§e"+msg;
 	}

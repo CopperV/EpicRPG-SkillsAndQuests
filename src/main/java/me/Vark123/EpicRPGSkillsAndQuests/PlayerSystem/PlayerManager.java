@@ -29,7 +29,7 @@ public final class PlayerManager {
 	
 	public QuestPlayer loadQuestPlayer(Player player) {
 		Collection<String> completedQuests = FileManager.getPlayerCompletedQuests(player);
-		Map<AQuest, PlayerQuest> activeQuests = DatabaseManager.getPlayerActiveQuests(player);
+		Map<AQuest, APlayerQuest> activeQuests = DatabaseManager.getPlayerActiveQuests(player);
 		QuestPlayer qp = new QuestPlayer(player, completedQuests, activeQuests);
 		return qp;
 	}

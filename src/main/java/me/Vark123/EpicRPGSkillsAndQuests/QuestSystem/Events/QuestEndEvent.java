@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 
 @Getter
 @AllArgsConstructor
@@ -13,7 +13,7 @@ public class QuestEndEvent extends Event {
 	
 	private static final HandlerList handlers = new HandlerList();
 	
-	private PlayerQuest playerQuest;
+	private APlayerQuest playerQuest;
 	 
 	@Override
 	public HandlerList getHandlers() {

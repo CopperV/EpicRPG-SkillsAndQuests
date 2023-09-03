@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 
 @Getter
@@ -51,6 +52,13 @@ public abstract class QuestItem extends AEpicItem {
 				im.setLore(quest.getLore());
 			});
 		it.setItemMeta(im);
+		
+		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
+			if(qp.getActiveQuests().containsKey(quest))
+				it.setType(Material.YELLOW_TERRACOTTA);
+			if(qp.getCompletedQuests().contains(quest.getId()))
+				it.setType(Material.RED_TERRACOTTA);
+		});
 		
 		return it;
 	}

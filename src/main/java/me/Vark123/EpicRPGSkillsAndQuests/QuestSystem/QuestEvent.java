@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @Getter
@@ -20,25 +20,25 @@ public class QuestEvent {
 	private EventCall callType;
 	private List<String> events;
 	
-	public void executeEvent(PlayerQuest pQuest) {
+	public void executeEvent(APlayerQuest pQuest) {
 		Player p = pQuest.getPlayer();
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			events.forEach(line -> {
-				String newLine = PlaceholderAPI.setPlaceholders(p, line);
+				String newLine = line.replace("%player%", p.getName());
+				newLine = PlaceholderAPI.setPlaceholders(p, newLine);
 				String[] event = newLine.split(": ");
-				
 				switch(event[0].toLowerCase()) {
 				case "quest":
 					String tmp[] = event[1].split(" ");
-					switch(tmp[1].toLowerCase()) {
+					switch(tmp[0].toLowerCase()) {
 						case "back":
-							if(!StringUtils.isNumeric(tmp[2]))
+							if(!StringUtils.isNumeric(tmp[1]))
 								return;
-							int newStage = Integer.parseInt(tmp[2]);
-							qp.degradeQuest(pQuest.getQuest(), newStage);
+							int newStage = Integer.parseInt(tmp[1]);
+							pQuest.changeQuestStage(newStage);
 							break;
 						case "remove":
-							qp.removeQuest(pQuest.getQuest());
+							pQuest.removeQuest();
 							break;
 					}
 					break;

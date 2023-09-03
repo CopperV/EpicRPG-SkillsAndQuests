@@ -54,8 +54,6 @@ public class GiveTaskListener implements Listener {
 		if(pTask.getIntProgress() >= ((GiveTask)pTask.getTask()).getAmount())
 			pTask.complete();
 		p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
-		//TODO
-		//Dodanie aktualizacji zadania
 	}
 	
 }

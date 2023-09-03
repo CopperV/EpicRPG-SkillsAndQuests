@@ -16,11 +16,11 @@ public class PlayerJoinListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		QuestPlayer qp = PlayerManager.get().loadQuestPlayer(p);
+		PlayerManager.get().registerPlayer(qp);
 		qp.getActiveQuests().forEach((quest, pQuest) -> {
 			TaskGroup group = quest.getTaskGroups().get(pQuest.getStage());
 			group.getEventsByType(EventCall.JOIN).ifPresent(event -> event.executeEvent(pQuest));
 		});
-		PlayerManager.get().registerPlayer(qp);
 	}
 	
 }
