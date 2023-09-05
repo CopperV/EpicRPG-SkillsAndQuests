@@ -19,15 +19,15 @@ import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
 @Getter
 public class TaskGroup {
 
-	private AQuest quest;
+	protected AQuest quest;
 	
-	private boolean autoupdate;
-	private String message;
+	protected boolean autoupdate;
+	protected String message;
 	
-	private Collection<ATask> tasks;
-	private Collection<IPrize> prize;
-	private Collection<IRequirement> requirements;
-	private Collection<QuestEvent> events;
+	protected Collection<ATask> tasks;
+	protected Collection<IPrize> prize;
+	protected Collection<IRequirement> requirements;
+	protected Collection<QuestEvent> events;
 	
 	public TaskGroup(ConfigurationSection groupSection, AQuest quest) {
 		this.quest = quest;

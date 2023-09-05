@@ -74,6 +74,7 @@ public class DailyQuestItem extends QuestItem {
 
 	@Override
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
+		super.clickAction(p, info, npc);
 		p.closeInventory();
 		QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
 		switch(info.getType()) {

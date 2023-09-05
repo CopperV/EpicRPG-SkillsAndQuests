@@ -16,10 +16,14 @@ public final class EpicRPGSkillsAndQuestsAPI {
 	private final String greenInfo = "§2§l✔§r";
 	private final String redInfo = "§4§l✘§r";
 	
+	private final String prefix;
+	
 	private EpicRPGSkillsAndQuestsAPI() {
 		this.epicRPGSkillsAndQuests = Main.getInst();
 		this.itemManager = EpicItemManager.get();
 		this.npcManager = EpicNPCManager.get();
+		
+		this.prefix = me.Vark123.EpicRPG.Main.getInstance().getPrefix();
 	}
 	
 	public static final EpicRPGSkillsAndQuestsAPI get() {

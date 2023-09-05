@@ -18,10 +18,11 @@ import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
 import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerWorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
@@ -100,6 +101,8 @@ public final class QuestMenuManager {
 						im.setDisplayName(quest.getDisplay());
 					else if(pQuest instanceof PlayerWorldQuest)
 						im.setDisplayName("§d§lZadanie swiatowe§r: "+quest.getDisplay());
+					else if(pQuest instanceof PlayerDungeonQuest)
+						im.setDisplayName("§c§lDungeon§r: "+quest.getDisplay());
 					List<String> lore = pQuest.getTasks().stream()
 							.map(pTask -> pTask.getProgress())
 							.collect(Collectors.toList());

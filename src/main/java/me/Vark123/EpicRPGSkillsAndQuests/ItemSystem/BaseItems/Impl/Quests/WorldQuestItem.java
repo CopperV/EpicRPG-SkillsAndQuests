@@ -87,6 +87,7 @@ public class WorldQuestItem extends QuestItem {
 
 	@Override
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
+		super.clickAction(p, info, npc);
 		p.closeInventory();
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		switch(info.getType()) {

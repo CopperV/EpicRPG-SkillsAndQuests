@@ -23,6 +23,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DailyQuestItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DungeonQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.StandardQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.WorldQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.ZlecenieQuestItem;
@@ -31,6 +32,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DailyQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.WorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
@@ -146,6 +148,14 @@ public final class FileManager {
 				QuestManager.get().registerQuest(quest);
 				EpicItemManager.get().registerItem(new WorldQuestItem(quest));
 			});
+		Arrays.asList(dungeonsDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				DungeonQuest quest = new DungeonQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new DungeonQuestItem(quest));
+			});
 	}
 	
 	private static void loadNPC() {
@@ -250,6 +260,20 @@ public final class FileManager {
 			.forEach(f -> {
 				YamlConfiguration fYml = YamlConfiguration.loadConfiguration(f);
 				fYml.set("completed", true);
+				try {
+					fYml.save(f);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+		QuestManager.get().getQuests().stream()
+			.filter(quest -> quest instanceof DungeonQuest
+					&& ((DungeonQuest) quest).isDefeated())
+			.map(quest -> new File(dungeonsDir, quest.getId()+".yml"))
+			.filter(f -> f.exists())
+			.forEach(f -> {
+				YamlConfiguration fYml = YamlConfiguration.loadConfiguration(f);
+				fYml.set("defeat", true);
 				try {
 					fYml.save(f);
 				} catch (IOException e) {

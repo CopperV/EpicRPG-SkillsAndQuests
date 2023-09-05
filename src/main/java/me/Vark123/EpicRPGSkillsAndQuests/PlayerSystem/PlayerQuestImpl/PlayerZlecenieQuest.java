@@ -17,6 +17,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @Getter
@@ -64,6 +65,9 @@ public class PlayerZlecenieQuest extends APlayerQuest {
 						.filter(req -> !req.checkRequirement(player))
 						.findFirst().ifPresentOrElse(req -> { }, () -> {
 							oldTaskGroup.getPrize().forEach(prize -> prize.givePrize(player));
+							localTaskGroups.get(stage + 1).getRequirements().stream()
+								.filter(req -> req instanceof TakeItemRequirement)
+								.forEach(req -> ((TakeItemRequirement) req).takeItems(player));
 							updateQuest();
 						});
 				}

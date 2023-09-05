@@ -14,6 +14,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 @AllArgsConstructor
 public abstract class APlayerQuest {
 
+	@Setter
 	protected Player player;
 	protected AQuest quest;
 	@Setter

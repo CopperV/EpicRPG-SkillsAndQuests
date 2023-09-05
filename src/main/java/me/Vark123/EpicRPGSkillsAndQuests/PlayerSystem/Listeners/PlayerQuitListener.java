@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -9,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.DatabaseManager;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
@@ -16,7 +18,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
 
 public class PlayerQuitListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		save(p);
@@ -40,6 +42,12 @@ public class PlayerQuitListener implements Listener {
 				.ifPresent(pQuest -> {
 					ZlecenieController.get().addZlecenieCooldown(p, 20*60*15);
 				});
+			qp.getActiveQuests().values().stream()
+				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest
+						&& ((PlayerDungeonQuest) pQuest).getParty().isEmpty())
+				.map(pQuest -> (PlayerDungeonQuest) pQuest)
+				.findFirst()
+				.ifPresent(dungeon -> dungeon.removeQuest());
 		});
 		FileManager.savePlayer(p);
 		DatabaseManager.savePlayerActiveQuests(p);

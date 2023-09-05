@@ -18,6 +18,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Events.QuestEndEvent;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class PlayerStandardQuest extends APlayerQuest {
@@ -51,6 +52,9 @@ public class PlayerStandardQuest extends APlayerQuest {
 						.filter(req -> !req.checkRequirement(player))
 						.findFirst().ifPresentOrElse(req -> { }, () -> {
 							oldTaskGroup.getPrize().forEach(prize -> prize.givePrize(player));
+							newTaskGroup.getRequirements().stream()
+								.filter(req -> req instanceof TakeItemRequirement)
+								.forEach(req -> ((TakeItemRequirement) req).takeItems(player));
 							updateQuest();
 						});
 				}

@@ -12,8 +12,10 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
+import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 
 @Getter
 @Setter
@@ -61,6 +63,16 @@ public abstract class QuestItem extends AEpicItem {
 		});
 		
 		return it;
+	}
+
+	@Override
+	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
+		if(!info.getType().equals(Material.GREEN_TERRACOTTA))
+			return true;
+		quest.getRequirements().stream()
+			.filter(req -> req instanceof TakeItemRequirement)
+			.forEach(req -> ((TakeItemRequirement) req).takeItems(p));
+		return true;
 	}
 	
 }

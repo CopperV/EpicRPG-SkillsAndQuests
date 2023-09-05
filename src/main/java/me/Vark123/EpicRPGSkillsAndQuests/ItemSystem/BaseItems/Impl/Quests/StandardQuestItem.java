@@ -13,13 +13,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import lombok.Getter;
-import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.QuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
@@ -30,7 +29,6 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.Events.GiveTaskEvent;
 
 @Getter
-@Setter
 public class StandardQuestItem extends QuestItem {
 
 	public StandardQuestItem(StandardQuest quest) {
@@ -84,6 +82,7 @@ public class StandardQuestItem extends QuestItem {
 
 	@Override
 	public boolean clickAction(Player p, ItemStack info, EpicNPC npc) {
+		super.clickAction(p, info, npc);
 		p.closeInventory();
 		QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
 		switch(info.getType()) {

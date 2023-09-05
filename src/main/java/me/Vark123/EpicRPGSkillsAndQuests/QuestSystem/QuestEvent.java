@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.clip.placeholderapi.PlaceholderAPI;
 
@@ -25,6 +26,8 @@ public class QuestEvent {
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			events.forEach(line -> {
 				String newLine = line.replace("%player%", p.getName());
+				if(newLine.contains("[DUNGEON_WORLD]"))
+					newLine = newLine.replace("[DUNGEON_WORLD]", ((PlayerDungeonQuest) pQuest).getWorld());
 				newLine = PlaceholderAPI.setPlaceholders(p, newLine);
 				String[] event = newLine.split(": ");
 				switch(event[0].toLowerCase()) {
