@@ -17,8 +17,6 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonPortal;
 
 @Getter
-//TODO
-//Ogarniecie wczytywania dungow
 public class DungeonQuest extends AQuest {
 
 	private String world;

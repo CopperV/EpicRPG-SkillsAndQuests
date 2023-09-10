@@ -27,6 +27,7 @@ public class PartyLeaderChangeListener implements Listener {
 				.ifPresent(dungeon -> {
 					dungeon.setPartyPlayer(newLeader);
 					dungeon.setPlayer(newLeader.getPlayer());
+					dungeon.getTasks().forEach(pTask -> pTask.setPlayer(newLeader.getPlayer()));
 				});
 		});
 	}

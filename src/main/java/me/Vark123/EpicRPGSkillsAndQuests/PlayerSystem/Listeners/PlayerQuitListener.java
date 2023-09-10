@@ -14,6 +14,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDung
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonController;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
 
 public class PlayerQuitListener implements Listener {
@@ -49,6 +50,7 @@ public class PlayerQuitListener implements Listener {
 				.findFirst()
 				.ifPresent(dungeon -> dungeon.removeQuest());
 		});
+		DungeonController.get().getRespTasks().remove(p);
 		FileManager.savePlayer(p);
 		DatabaseManager.savePlayerActiveQuests(p);
 		PlayerManager.get().unregisterPlayer(p);

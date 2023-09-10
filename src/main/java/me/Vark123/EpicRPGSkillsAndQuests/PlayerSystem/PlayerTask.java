@@ -13,6 +13,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 @AllArgsConstructor
 public class PlayerTask {
 
+	@Setter
 	private Player player;
 	protected AQuest quest;
 	protected ATask task;

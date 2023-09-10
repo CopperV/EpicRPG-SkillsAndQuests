@@ -1,11 +1,13 @@
 package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -35,6 +38,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonController;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonResp;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Events.DungeonEndEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -56,6 +60,8 @@ public class PlayerDungeonQuest extends APlayerQuest {
 	private Collection<MythicSpawner> spawners;
 	
 	private Map<Player, Double> damageCounter;
+	
+	private long startTime;
 	
 	public PlayerDungeonQuest(Player player, AQuest quest, int stage, Collection<PlayerTask> tasks) {
 		super(player, quest, stage, tasks);
@@ -88,17 +94,40 @@ public class PlayerDungeonQuest extends APlayerQuest {
 				DungeonQuest dungeon = (DungeonQuest) quest;
 				boolean defeat = dungeon.isDefeated();
 				
+				long endTime = new Date().getTime();
+				long duration = endTime - startTime;
+				long hours = TimeUnit.MILLISECONDS.toHours(duration);
+				long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
+				long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
+				long milliseconds = TimeUnit.MILLISECONDS.toMillis(duration) % 1000;
+				StringBuilder builder = new StringBuilder(prefix+" §ePodejscie trwalo: §f");
+				if(hours > 0) {
+					builder.append(String.format("%02d", hours)+":"
+							+String.format("%02d", minutes)+":"
+							+String.format("%02d", seconds)+"."
+							+String.format("%03d", milliseconds));
+				} else if(minutes > 0) {
+					builder.append(String.format("%02d", minutes)+":"
+							+String.format("%02d", seconds)+"."
+							+String.format("%03d", milliseconds));
+				} else {
+					builder.append(String.format("%02d", seconds)+"."
+							+String.format("%03d", milliseconds));
+				}
+				
 				if(soloRun) {
 					if(defeat)
 						Bukkit.broadcastMessage(prefix+" §7"+partyPlayer.getName()+" §esamodzielnie przeszedl dungeon §r"+dungeon.getDisplay());
 					else
 						Bukkit.broadcastMessage(prefix+" §7"+partyPlayer.getName()+" §ejako pierwszy przeszedl dungeon §r"+dungeon.getDisplay());
+					Bukkit.broadcastMessage(builder.toString());
 				} else {
 					if(defeat) {
 						Bukkit.broadcastMessage(prefix+" §eDruzyna §7"+partyPlayer.getName()+" §eprzeszla dungeon §r"+dungeon.getDisplay());
 					} else {
 						Bukkit.broadcastMessage(prefix+" §eDruzyna §7"+partyPlayer.getName()+" §ejako pierwsza przeszla dungeon §r"+dungeon.getDisplay());
 					}
+					Bukkit.broadcastMessage(builder.toString());
 					var max = damageCounter.entrySet()
 						.stream()
 						.max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
@@ -112,6 +141,8 @@ public class PlayerDungeonQuest extends APlayerQuest {
 				}
 				
 				dungeon.setDefeated(true);
+				Event event = new DungeonEndEvent(this);
+				Bukkit.getPluginManager().callEvent(event);
 			});
 	}
 
@@ -292,7 +323,7 @@ public class PlayerDungeonQuest extends APlayerQuest {
 		Location pLoc = player.getLocation();
 		Location loc = new Location(dungeonWorld,
 				resp.getRespX(), resp.getRespY(), resp.getRespZ(),
-				pLoc.getPitch(), pLoc.getYaw());
+				pLoc.getYaw(), pLoc.getPitch());
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -305,6 +336,13 @@ public class PlayerDungeonQuest extends APlayerQuest {
 	public void createRespTask(QuestPlayer qp) {
 		World dungeonWorld = Bukkit.getWorld(world);
 		PlayerDungeonQuest tmp = this;
+		Player p = qp.getPlayer();
+		p.sendMessage(DungeonController.get().getDungeonPrefix()+
+				" §ePoczekaj §f15 §esekund na teleportacje");
+		p.sendMessage(DungeonController.get().getDungeonPrefix()+
+				" §eDruzynie pozostalo §f"+presentRespAmount+" §epunktow odrodzen");
+		p.sendMessage(DungeonController.get().getDungeonPrefix()+
+				" §eNa pewno chcesz sie teleportowac?");
 		BukkitTask respawnTask = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -312,7 +350,6 @@ public class PlayerDungeonQuest extends APlayerQuest {
 					return;
 				if(!qp.getActiveQuests().values().contains(tmp))
 					return;
-				Player p = qp.getPlayer();
 				if(presentRespAmount <= 0) {
 					p.playSound(p, Sound.ENTITY_VILLAGER_HURT, 1, 0.85f);
 					p.sendMessage(DungeonController.get().getDungeonPrefix()+

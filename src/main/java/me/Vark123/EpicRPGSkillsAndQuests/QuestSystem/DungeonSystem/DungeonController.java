@@ -3,6 +3,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -133,6 +134,7 @@ public final class DungeonController {
 				dungeonQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eDolacz na niego przy pomocy komendy §f§o/dungeon");
 				
 				dungeonQuest.setCanJoin(true);
+				dungeonQuest.setStartTime(new Date().getTime());
 			}
 		}.runTask(Main.getInst());
 		

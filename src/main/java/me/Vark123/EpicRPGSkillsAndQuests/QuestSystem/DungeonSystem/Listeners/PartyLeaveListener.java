@@ -32,7 +32,12 @@ public class PartyLeaveListener implements Listener {
 						return;
 					if(!leader.equals(member))
 						return;
-					dungeon.setPartyPlayer(member);
+					
+					PartyPlayer newMember = party.getMembers().get(0).equals(leader) ? party.getMembers().get(1) : party.getMembers().get(0);
+					dungeon.setPartyPlayer(newMember);
+					dungeon.setPlayer(newMember.getPlayer());
+					dungeon.getTasks().forEach(pTask -> pTask.setPlayer(newMember.getPlayer()));
+					dungeon.setParty(null);
 				});
 		});
 	}

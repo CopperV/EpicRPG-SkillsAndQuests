@@ -48,13 +48,14 @@ public class TakeItemRequirement implements IRequirement {
 	public void takeItems(Player p) {
 		PlayerInventory inv = p.getInventory();
 		int toRemove = amount;
-		ItemStack[] storage = inv.getStorageContents();
-		for(int i = 0; i < storage.length && toRemove > 0; ++i) {
-			ItemStack it = storage[i];
+		for(int i = 0; i < 36 && toRemove > 0; ++i) {
+			ItemStack it = inv.getItem(i);
 			if(it == null || it.getType().equals(Material.AIR))
 				continue;
 			NBTItem nbt = new NBTItem(it);
 			if(!nbt.hasTag("MYTHIC_TYPE"))
+				continue;
+			if(!nbt.getString("MYTHIC_TYPE").equals(mmItem))
 				continue;
 			if(it.getAmount() > toRemove) {
 				it.setAmount(it.getAmount() - toRemove);

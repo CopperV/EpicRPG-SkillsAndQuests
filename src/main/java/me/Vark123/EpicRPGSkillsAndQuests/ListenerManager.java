@@ -18,6 +18,8 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.Par
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyLeaderChangeListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyLeaveListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyRemoveListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerBlockedRegionEntryListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyResetListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FindTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FishTaskListener;
@@ -55,6 +57,8 @@ public final class ListenerManager {
 		Bukkit.getPluginManager().registerEvents(new TalkTaskListener(), inst);
 
 		Bukkit.getPluginManager().registerEvents(new DailyResetListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new PlayerMoveOnRespListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new PlayerBlockedRegionEntryListener(), inst);
 
 		Bukkit.getPluginManager().registerEvents(new PartyCreateListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new PartyJoinListener(), inst);
