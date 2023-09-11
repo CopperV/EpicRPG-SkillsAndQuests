@@ -1,5 +1,5 @@
 name: EpicRPGSkillsAndQuests
-version: 2.0.0-ALPHA
+version: 2.0.0
 main: me.Vark123.EpicRPGSkillsAndQuests.Main
 author: Vark123
 depend: [CalendarEvents,MythicMobs,MultiWorld,EpicParty,NBTAPI,EpicRPG,EpicNPC]
