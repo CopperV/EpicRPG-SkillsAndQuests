@@ -1,5 +1,6 @@
 package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.GMSystem.MenuSystem;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,7 @@ import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
 import io.github.rysefoxx.inventory.plugin.enums.InventoryOpenerType;
 import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import lombok.Getter;
+import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -54,6 +56,7 @@ public final class GMMenuManager {
 	private final ItemStack completeTask;
 	private final ItemStack uncompleteTask;
 	private final ItemStack changeTargetTask;
+	private final ItemStack changeMessageTask;
 	private final ItemStack changeProgressTask;
 	private final ItemStack changeAmountTask;
 	private final ItemStack changeLevelTask;
@@ -103,6 +106,12 @@ public final class GMMenuManager {
 			im.setDisplayName("§7§lZMIEN CEL TASKA");
 			im.setLore(Arrays.asList(" ","§4§lUWAGA §7[§e§lOPERACJA GLOBALNA§7]"));
 			changeTargetTask.setItemMeta(im);
+		}
+		changeMessageTask = new ItemStack(Material.WRITABLE_BOOK);{
+			ItemMeta im = changeMessageTask.getItemMeta();
+			im.setDisplayName("§7§lZMIEN WIADOMOSC TASKA");
+			im.setLore(Arrays.asList(" ","§4§lUWAGA §7[§e§lOPERACJA GLOBALNA§7]"));
+			changeMessageTask.setItemMeta(im);
 		}
 		changeProgressTask = new ItemStack(Material.EXPERIENCE_BOTTLE);{
 			ItemMeta im = changeProgressTask.getItemMeta();
@@ -352,15 +361,16 @@ public final class GMMenuManager {
 					else
 						contents.set(1, completeTask);
 					contents.set(2, changeTargetTask);
+					contents.set(3, changeMessageTask);
 					if(task instanceof FishTask || task instanceof GiveTask || task instanceof KillTask
 							|| task instanceof PlayerKillTask || task instanceof PointsTask) {
-						contents.set(3, changeProgressTask);
-						contents.set(4, changeAmountTask);
+						contents.set(4, changeProgressTask);
+						contents.set(5, changeAmountTask);
 					}
 					if(task instanceof PlayerKillTask)
-						contents.set(5, changeLevelTask);
+						contents.set(6, changeLevelTask);
 					if(task instanceof FishTask)
-						contents.set(5, changeInRowTask);
+						contents.set(6, changeInRowTask);
 					contents.set(7, taskInfo);
 					contents.set(8, back);
 				});
@@ -400,6 +410,14 @@ public final class GMMenuManager {
 							case "target":
 							{
 								task.setTarget(ChatColor.translateAlternateColorCodes('&', text));
+								FileManager.updateTaskQuest(type, pTask, pQuest);
+							}
+								break;
+							case "message":
+							{
+								text += ": %stan%";
+								task.setTarget(ChatColor.translateAlternateColorCodes('&', text));
+								FileManager.updateTaskQuest(type, pTask, pQuest);
 							}
 								break;
 							case "progress":
@@ -421,7 +439,10 @@ public final class GMMenuManager {
 									break;
 								int amount = Integer.parseInt(text);
 								try {
-									task.getClass().getField("amount").set(task, amount);
+									Field field = task.getClass().getDeclaredField("amount");
+									field.setAccessible(true);
+									field.set(task, amount);
+									FileManager.updateTaskQuest(type, pTask, pQuest);
 								} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 										| SecurityException e) {
 									e.printStackTrace();
@@ -434,6 +455,7 @@ public final class GMMenuManager {
 									break;
 								int level = Integer.parseInt(text);
 								((PlayerKillTask) task).setLevel(level);
+								FileManager.updateTaskQuest(type, pTask, pQuest);
 							}
 								break;
 							case "fish":
@@ -442,6 +464,7 @@ public final class GMMenuManager {
 									break;
 								boolean inRow = Integer.parseInt(text) == 0 ? false : true;
 								((FishTask) task).setInRow(inRow);
+								FileManager.updateTaskQuest(type, pTask, pQuest);
 							}
 								break;
 						}

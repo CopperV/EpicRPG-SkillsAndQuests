@@ -1,5 +1,6 @@
 package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.GMSystem.MenuSystem;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -269,6 +270,16 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 					});
 				return;
 			}
+			if(it.equals(GMMenuManager.get().getChangeMessageTask())) {
+				pQuest.getTasks().stream()
+					.filter(pTask -> pTask.getTask().equals(task))
+					.findAny()
+					.ifPresent(pTask -> {
+						GMMenuManager.get().openTaskEditAnvilMenu(viewer, p, pTask,
+								task.getTarget().replace('§', '&').replace(": %stan%", ""), "message");
+					});
+				return;
+			}
 			
 			if(it.equals(GMMenuManager.get().getChangeProgressTask())) {
 				pQuest.getTasks().stream()
@@ -286,7 +297,9 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 					.findAny()
 					.ifPresent(pTask -> {
 						try {
-							int amount = task.getClass().getField("amount").getInt(task);
+							Field field = task.getClass().getDeclaredField("amount");
+							field.setAccessible(true);
+							int amount = field.getInt(task);
 							GMMenuManager.get().openTaskEditAnvilMenu(viewer, p, pTask,
 									amount+"", "amount");
 						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException

@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,7 +31,15 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.WorldQ
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.ZlecenieQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPCManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerWorldQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
@@ -38,6 +48,9 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.WorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyController;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.WorldQuestController;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.FishTask;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.PlayerKillTask;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.RequirementManager;
 
 @Getter
@@ -280,6 +293,78 @@ public final class FileManager {
 					e.printStackTrace();
 				}
 			});
+	}
+	
+	public static void updateTaskQuest(String change, PlayerTask pTask, APlayerQuest pQuest) {
+		File dir;
+		if(pQuest instanceof PlayerStandardQuest)
+			dir = questsDir;
+		else if(pQuest instanceof PlayerZlecenieQuest)
+			dir = zleceniaDir;
+		else if(pQuest instanceof PlayerDailyQuest)
+			dir = dailyDir;
+		else if(pQuest instanceof PlayerWorldQuest)
+			dir = worldQuestsDir;
+		else if(pQuest instanceof PlayerDungeonQuest)
+			dir = dungeonsDir;
+		else 
+			return;
+		
+		AQuest quest = pQuest.getQuest();
+		File questFile = new File(dir, quest.getId()+".yml");
+		if(!questFile.exists())
+			return;
+		
+		MutableInt trueStage = new MutableInt(pQuest.getStage());
+		if(pQuest instanceof PlayerZlecenieQuest) {
+			quest.getTaskGroups().entrySet().stream()
+				.filter(entry -> entry.getValue().equals(pQuest.getPresentTaskGroup()))
+				.findAny()
+				.ifPresentOrElse(entry -> trueStage.setValue(entry.getKey()),
+						() -> {
+							trueStage.setValue(-1);
+						});
+			if(trueStage.getValue() < 0)
+				return;
+		}
+		
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(questFile);
+		ConfigurationSection section = fYml.getConfigurationSection("stopnie."+trueStage.intValue()+".targets");
+		section.getKeys(false).stream()
+			.filter(key -> section.getString(key+".id").equals(pTask.getTask().getId()))
+			.findAny()
+			.ifPresent(key -> {
+				ATask task = pTask.getTask();
+				switch(change.toLowerCase()) {
+					case "target":
+						section.set(key+".targetName", task.getTarget().replace('§', '&'));
+						break;
+					case "message":
+						section.set(key+".message", task.getMessage().replace('§', '&'));
+						break;
+					case "amount":
+						try {
+							Field field = task.getClass().getDeclaredField("amount");
+							field.setAccessible(true);
+							section.set(key+".ilosc", field.get(task));
+						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+								| SecurityException e) {
+							e.printStackTrace();
+						}
+						break;
+					case "level":
+						section.set(key+".level", ((PlayerKillTask) task).getLevel());
+						break;
+					case "fish":
+						section.set(key+".inrow", ((FishTask) task).isInRow());
+						break;
+				}
+			});
+		try {
+			fYml.save(questFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
