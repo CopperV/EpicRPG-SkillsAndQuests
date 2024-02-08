@@ -29,15 +29,15 @@ public class PartyCreateListener implements Listener {
 					dungeon.removeQuest();
 				});
 		});
-		
+
 		PlayerManager.get().getQuestPlayer(leader.getPlayer()).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()
 				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest)
 				.map(pQuest -> (PlayerDungeonQuest) pQuest)
 				.findAny()
 				.ifPresent(dungeon -> {
-					if(!dungeon.isSoloRun())
-						dungeon.setSoloRun(true);
+					if(dungeon.isSoloRun())
+						dungeon.setSoloRun(false);
 					dungeon.setParty(party);
 					PlayerManager.get().getQuestPlayer(member.getPlayer())
 						.ifPresent(qp2 -> qp2.getActiveQuests().put(dungeon.getQuest(), dungeon));

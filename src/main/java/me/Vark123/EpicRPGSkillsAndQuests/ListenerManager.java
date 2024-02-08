@@ -1,9 +1,7 @@
 package me.Vark123.EpicRPGSkillsAndQuests;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventPriority;
 
-import me.Vark123.EpicRPG.FightSystem.Modifiers.DamageModifierManager;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners.EpicNPCClickListener;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners.EpicNPCMenuClickListener;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners.NPCSpawnListener;
@@ -12,6 +10,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerJoinListen
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerQuitListener;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.Listeners.PlayerWorldChangeListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.DungeonDamageListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.DungeonPortalEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyCreateListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyJoinListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PartyKickListener;
@@ -67,7 +66,8 @@ public final class ListenerManager {
 		Bukkit.getPluginManager().registerEvents(new PartyLeaveListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new PartyRemoveListener(), inst);
 
-		DamageModifierManager.getInstance().registerModifier(new DungeonDamageListener(), EventPriority.MONITOR);
+		Bukkit.getPluginManager().registerEvents(new DungeonDamageListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new DungeonPortalEntryListener(), inst);
 		
 		CalendarEventsApi calendar = Main.getInst().getCalendar();
 		if(calendar.isRegisteredEvent("reset_daily"))

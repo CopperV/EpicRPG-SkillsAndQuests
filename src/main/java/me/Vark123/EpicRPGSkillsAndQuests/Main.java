@@ -48,7 +48,7 @@ public class Main extends JavaPlugin {
 		//TODO
 		//Zapisywanie graczy
 		Bukkit.getOnlinePlayers().forEach(p -> {
-			
+			DatabaseManager.savePlayerActiveQuests(p);
 		});
 		FileManager.saveWorldQuests();
 		DatabaseManager.clean();

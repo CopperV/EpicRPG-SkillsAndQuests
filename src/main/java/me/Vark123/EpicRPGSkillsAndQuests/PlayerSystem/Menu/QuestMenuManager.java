@@ -90,6 +90,14 @@ public final class QuestMenuManager {
 				MutableInt slot = new MutableInt();
 				qp.getActiveQuests().values().forEach(pQuest -> {
 					ItemStack questItem = new ItemStack(Material.KNOWLEDGE_BOOK);
+					if(pQuest instanceof PlayerZlecenieQuest)
+						questItem.setType(Material.PAPER);
+					else if(pQuest instanceof PlayerDailyQuest)
+						questItem.setType(Material.WRITTEN_BOOK);
+					else if(pQuest instanceof PlayerWorldQuest)
+						questItem.setType(Material.ENCHANTED_BOOK);
+					else if(pQuest instanceof PlayerDungeonQuest)
+						questItem.setType(Material.BOOK);
 					AQuest quest = pQuest.getQuest();
 					
 					ItemMeta im = questItem.getItemMeta();

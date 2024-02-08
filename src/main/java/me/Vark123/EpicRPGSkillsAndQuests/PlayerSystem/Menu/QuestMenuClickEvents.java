@@ -37,9 +37,6 @@ public final class QuestMenuClickEvents {
 	
 	private EventCreator<InventoryClickEvent> questListClickEventCreator() {
 		Consumer<InventoryClickEvent> event = e -> {
-			if(e.isCancelled())
-				return;
-			
 			Player viewer = (Player) e.getWhoClicked();
 			Inventory inv = e.getView().getTopInventory();
 			if(e.getClickedInventory() == null || !e.getClickedInventory().equals(inv))
@@ -89,9 +86,6 @@ public final class QuestMenuClickEvents {
 	
 	private EventCreator<InventoryClickEvent> questInfoClickEventCreator() {
 		Consumer<InventoryClickEvent> event = e -> {
-			if(e.isCancelled())
-				return;
-			
 			Player viewer = (Player) e.getWhoClicked();
 			Inventory inv = e.getView().getTopInventory();
 			if(e.getClickedInventory() == null || !e.getClickedInventory().equals(inv))

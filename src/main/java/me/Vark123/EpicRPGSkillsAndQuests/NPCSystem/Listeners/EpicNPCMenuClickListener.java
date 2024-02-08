@@ -1,10 +1,12 @@
 package me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.Listeners;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.NPCMenuHolder;
@@ -29,6 +31,10 @@ public class EpicNPCMenuClickListener implements Listener {
 		EpicNPC npc = ((NPCMenuHolder) inv.getHolder()).getNpc();
 		int slot = e.getSlot();
 		if(!npc.getItemSlots().containsKey(slot))
+			return;
+		
+		ItemStack it = inv.getItem(slot);
+		if(it == null || it.getType().equals(Material.AIR))
 			return;
 		
 		npc.getItemSlots().get(slot).clickAction(p, inv.getItem(slot), npc);

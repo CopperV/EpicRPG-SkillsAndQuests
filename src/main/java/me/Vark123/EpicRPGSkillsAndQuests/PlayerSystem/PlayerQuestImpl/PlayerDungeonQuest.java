@@ -50,7 +50,6 @@ public class PlayerDungeonQuest extends APlayerQuest {
 	private PartyPlayer partyPlayer;
 	private Party party;
 	private boolean soloRun = true;
-	private boolean clanRun = false;
 	private boolean canJoin = false;
 	private int presentRespAmount;
 	
