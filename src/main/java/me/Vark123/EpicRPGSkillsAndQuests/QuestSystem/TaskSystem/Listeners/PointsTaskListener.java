@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 
+import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import me.Vark123.EpicRPG.EpicRPGMobManager;
 import me.Vark123.EpicRPG.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -20,13 +21,16 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.PointsTask;
 public class PointsTaskListener implements Listener {
 
 	@EventHandler
-	public void onKill(EntityDeathEvent e) {
-		LivingEntity victim = e.getEntity();
-		Player killer = e.getEntity().getKiller();
-		if(victim instanceof Player)
+	public void onKill(MythicMobDeathEvent e) {
+		Entity victim = e.getEntity();
+		LivingEntity _killer = e.getKiller();
+		
+		if(_killer == null)
 			return;
-		if(killer == null)
+		if(!(_killer instanceof Player))
 			return;
+		
+		Player killer = (Player) _killer;
 		
 		String name = victim.getName();
 		

@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import me.Vark123.EpicRPG.Main;
+import me.Vark123.EpicRPGSkillsAndQuests.DatabaseManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
 import me.nikl.calendarevents.CalendarEvent;
@@ -25,6 +26,7 @@ public class DailyResetListener implements Listener {
 					.ifPresent(pQuest -> pQuest.removeQuest());
 			});
 		});
+		DatabaseManager.clearDaily();
 		DailyController.get().getDoneDaily().clear();
 	}
 	

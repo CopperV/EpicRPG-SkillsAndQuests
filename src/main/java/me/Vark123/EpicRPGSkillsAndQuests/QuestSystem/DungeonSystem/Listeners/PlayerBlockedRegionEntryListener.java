@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,6 +73,11 @@ public class PlayerBlockedRegionEntryListener implements Listener {
 							Location A = e.getTo();
 							Location B = e.getFrom();
 							Vector knock = new Vector(B.getX() - A.getX(), 0, B.getZ() - A.getZ()).normalize().multiply(2.0).setY(0.5);
+							if(p.getInventory().getChestplate().getType().equals(Material.ELYTRA)
+									&& p.isGliding()) {
+								knock.setY(-0.5);
+								p.setGliding(false);
+							}
 							p.setVelocity(knock);
 							
 							cooldown.put(p, new Date());

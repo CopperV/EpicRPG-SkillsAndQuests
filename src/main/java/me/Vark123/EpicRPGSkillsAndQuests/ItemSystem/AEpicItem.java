@@ -11,7 +11,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 @EqualsAndHashCode
 public abstract class AEpicItem {
 
-	private String id;
+	protected String id;
 
 	public AEpicItem(String id) {
 		super();

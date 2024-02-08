@@ -390,6 +390,15 @@ public final class DatabaseManager {
 		}
 	}
 	
+	public static void clearDaily() {
+		String polecenie = "TRUNCATE TABLE `daily`;";
+		try {
+			c.createStatement().executeUpdate(polecenie);
+		} catch (SQLException e) {
+			System.out.println("Blad czyszczenia daily questow: "+e.getMessage());
+		}
+	}
+	
 	private static boolean isPlayerExistsInDatabase(Player p) {
 		String uid = p.getUniqueId().toString();
 		String sql = "SELECT id FROM users WHERE uuid LIKE \""+uid+"\";";

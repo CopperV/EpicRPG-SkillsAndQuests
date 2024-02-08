@@ -1,5 +1,5 @@
 name: EpicRPGSkillsAndQuests
-version: 2.0.0
+version: 2.0.1
 main: me.Vark123.EpicRPGSkillsAndQuests.Main
 author: Vark123
 depend: [CalendarEvents,MythicMobs,MultiWorld,EpicParty,NBTAPI,EpicRPG,EpicNPC]
@@ -7,7 +7,7 @@ softdepend: [EpicRPGFishing]
 api-version: 1.18
 
 libraries:
-  - io.github.rysefoxx.inventory:RyseInventory-Plugin:1.6.3
+  - io.github.rysefoxx.inventory:RyseInventory-Plugin:1.6.5
 
 commands:
   quests:

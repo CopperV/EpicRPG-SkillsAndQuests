@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.tr7zw.nbtapi.NBTItem;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.IRequirement;
 
@@ -42,7 +43,8 @@ public class TakeItemRequirement implements IRequirement {
 
 	@Override
 	public String getRequirementInfo() {
-		return "§cOddaj §7"+amount+"§r "+mmItem+"§r";
+		String name = MythicBukkit.inst().getItemManager().getItemStack(mmItem).getItemMeta().getDisplayName();
+		return "§cOddaj §7"+amount+"§r "+name+"§r";
 	}
 	
 	public void takeItems(Player p) {

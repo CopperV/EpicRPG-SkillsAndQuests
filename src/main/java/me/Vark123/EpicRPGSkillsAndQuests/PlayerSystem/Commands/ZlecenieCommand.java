@@ -21,7 +21,7 @@ public class ZlecenieCommand implements CommandExecutor {
 			return false;
 		
 		String prefix = Main.getInstance().getPrefix();
-		if(args.length == 0 || args[0].equalsIgnoreCase("opusc")) {
+		if(args.length == 0 || !args[0].equalsIgnoreCase("opusc")) {
 			sender.sendMessage(prefix+" §cPoprawne uzycie komendy §c§o/zlecenie:");
 			sender.sendMessage("§4§l»  §c§o/zlecenie opusc");
 			return false;

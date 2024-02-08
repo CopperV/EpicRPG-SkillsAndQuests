@@ -37,7 +37,7 @@ public class ZdolnosciStat extends StatItem {
 	public ItemStack getItem(Player p) {
 		ItemStack it = super.getItem(p);
 		RpgPlayer rpg = PlayerManager.getInstance().getRpgPlayer(p);
-		if(rpg.getStats().getZdolnosci() + amount > limit)
+		if(rpg.getStats().getZdolnosciMysliwskie() + amount > limit)
 			it.setType(Material.WHITE_TERRACOTTA);
 		return it;
 	}

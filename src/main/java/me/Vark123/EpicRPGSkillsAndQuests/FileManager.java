@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -22,6 +24,7 @@ import org.bukkit.entity.Player;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.AEpicItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.EpicItemManager;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.CustomItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DailyQuestItem;
@@ -66,6 +69,7 @@ public final class FileManager {
 	private static final File questsDir = new File(Main.getInst().getDataFolder(), "quests");
 	@Getter
 	private static final File playerQuestsDir = new File(Main.getInst().getDataFolder(), "pquests");
+	private static final File oldPlayerQuestDir = new File(Main.getInst().getDataFolder(), "old_pquests");
 	@Getter
 	private static final File worldQuestsDir = new File(Main.getInst().getDataFolder(), "worldquests");
 	@Getter
@@ -97,6 +101,9 @@ public final class FileManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		
+		if(oldPlayerQuestDir.exists())
+			convert();
 		
 		if(!dailyDir.exists())
 			dailyDir.mkdir();
@@ -190,7 +197,7 @@ public final class FileManager {
 						String item = slots.getString(slot+".item");
 						
 						EpicItemManager.get().getItemById(item)
-							.ifPresent(epicItem -> {
+							.ifPresentOrElse(epicItem -> {
 								AEpicItem clone = epicItem.clone();
 								if(clone instanceof StatItem && slots.contains(slot+".max")) {
 									((StatItem)clone).setLimit(slots.getInt(slot+".max"));
@@ -200,6 +207,16 @@ public final class FileManager {
 									((LearnItem)clone).getRequirements().addAll(RequirementManager.generateRequirements(lines));
 								}
 								items.put(_slot, clone);
+							}, () -> {
+								if(!item.equalsIgnoreCase("custom"))
+									return;
+								String id = slots.getString(slot+".id");
+								Material m = Material.valueOf(slots.getString(slot+".material").toUpperCase());
+								String display = ChatColor.translateAlternateColorCodes('&', slots.getString(slot+".display"));
+								List<String> actions = slots.getStringList(slot+".actions");
+								CustomItem _item = new CustomItem(id, m, display, actions);
+								EpicItemManager.get().registerItem(_item);
+								items.put(_slot, _item);
 							});
 					});
 				EpicNPC npc = new EpicNPC(name, title, size, items);
@@ -234,6 +251,7 @@ public final class FileManager {
 		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(file);
 		PlayerManager.get().getQuestPlayer(p)
 			.ifPresent(qp -> {
+				fYml.set("last-nick", p.getName());
 				fYml.set("done", qp.getCompletedQuests());
 			});
 		try {
@@ -365,6 +383,47 @@ public final class FileManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void convert() {
+		Arrays.asList(oldPlayerQuestDir.listFiles()).stream()
+			.filter(file -> file.isFile())
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				String nick = fYml.getString("nazwa");
+				String uid = fYml.getString("UUID");
+				List<String> quests = fYml.getStringList("done");
+				
+				File file = new File(playerQuestsDir, uid+".yml");
+				if(file.exists()) {
+					File toCompare1 = new File(oldPlayerQuestDir, nick.toLowerCase()+".yml");
+					YamlConfiguration fYml2 = YamlConfiguration.loadConfiguration(file);
+					String nick2 = fYml2.getString("last-nick");
+					File toCompare2 = new File(oldPlayerQuestDir, nick2.toLowerCase()+".yml");
+					if(toCompare2.exists()
+							&& FileUtils.isFileNewer(toCompare1, toCompare2))
+						return;
+					if(!toCompare2.exists())
+						return;
+				} else {
+					try {
+						file.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				YamlConfiguration fYml2 = YamlConfiguration.loadConfiguration(file);
+				fYml2.set("last-nick", nick);
+				fYml2.set("done", quests);
+				try {
+					fYml2.save(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+		oldPlayerQuestDir.renameTo(new File(Main.getInst().getDataFolder(), "archive"));
 	}
 	
 }

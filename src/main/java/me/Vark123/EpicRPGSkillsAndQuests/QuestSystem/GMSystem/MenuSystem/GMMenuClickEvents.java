@@ -51,9 +51,6 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 	
 	private EventCreator<InventoryClickEvent> questsClickEventCreator() {
 		Consumer<InventoryClickEvent> event = e -> {
-			if(e.isCancelled())
-				return;
-			
 			Player viewer = (Player) e.getWhoClicked();
 			Inventory inv = e.getView().getTopInventory();
 			if(e.getClickedInventory() == null || !e.getClickedInventory().equals(inv))
@@ -103,9 +100,6 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 	
 	private EventCreator<InventoryClickEvent> questEditClickEventCreator() {
 		Consumer<InventoryClickEvent> event = e -> {
-			if(e.isCancelled())
-				return;
-			
 			Player viewer = (Player) e.getWhoClicked();
 			Inventory inv = e.getView().getTopInventory();
 			if(e.getClickedInventory() == null || !e.getClickedInventory().equals(inv))
@@ -190,9 +184,6 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 	
 	private EventCreator<InventoryClickEvent> taskEditClickEventCreator() {
 		Consumer<InventoryClickEvent> event = e -> {
-			if(e.isCancelled())
-				return;
-			
 			Player viewer = (Player) e.getWhoClicked();
 			Inventory inv = e.getView().getTopInventory();
 			if(e.getClickedInventory() == null || !e.getClickedInventory().equals(inv))
