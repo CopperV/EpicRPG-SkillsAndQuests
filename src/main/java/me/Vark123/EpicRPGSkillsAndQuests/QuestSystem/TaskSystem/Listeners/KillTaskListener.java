@@ -24,8 +24,14 @@ public class KillTaskListener implements Listener {
 		Entity victim = e.getEntity();
 		LivingEntity _killer = e.getKiller();
 		
-		if(_killer == null)
-			return;
+		if(_killer == null || !(_killer instanceof Player)) {
+			if(!(victim instanceof LivingEntity))
+				return;
+			Player killer = ((LivingEntity) victim).getKiller();
+			if(killer == null)
+				return;
+			_killer = killer;
+		};
 		if(!(_killer instanceof Player))
 			return;
 		

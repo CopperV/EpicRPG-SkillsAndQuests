@@ -26,6 +26,9 @@ public class DungeonDamageListener implements Listener {
 		if(!(damager instanceof Player))
 			return;
 		
+		if(!(damager.getWorld().getName().toLowerCase().contains("dungeon")))
+			return;
+		
 		Player p = (Player) damager;
 		double damage = e.getFinalDamage();
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {

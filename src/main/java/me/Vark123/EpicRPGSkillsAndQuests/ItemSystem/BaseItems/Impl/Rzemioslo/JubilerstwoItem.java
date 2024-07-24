@@ -46,7 +46,7 @@ public class JubilerstwoItem extends LearnItem {
 		p.sendMessage(npc.getName()+"§r: §aNo wiec sluchaj. Bierzesz menzurke, a nastepnie...");
 		RpgPlayer rpg = PlayerManager.getInstance().getRpgPlayer(p);
 		rpg.getInfo().removePN(price);
-		rpg.getRzemiosla().setAlchemia(true);
+		rpg.getRzemiosla().setJubilerstwo(true);
 		npc.openMenu(p);
 		return true;
 	}

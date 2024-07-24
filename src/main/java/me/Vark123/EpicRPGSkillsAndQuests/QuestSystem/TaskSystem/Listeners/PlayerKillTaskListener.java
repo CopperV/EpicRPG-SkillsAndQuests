@@ -28,6 +28,9 @@ public class PlayerKillTaskListener implements Listener {
 		if(killer == null)
 			return;
 		
+		if(victim.equals(killer))
+			return;
+		
 		RpgPlayer rpg = me.Vark123.EpicRPG.Players.PlayerManager
 				.getInstance()
 				.getRpgPlayer((Player) victim);
@@ -38,7 +41,7 @@ public class PlayerKillTaskListener implements Listener {
 				tasksToComplete.getValue().addAll(pQuest.getTasks().stream()
 						.filter(pTask -> pTask.getTask() instanceof PlayerKillTask
 								&& !pTask.isCompleted()
-								&& ((PlayerKillTask) pTask.getTask()).getLevel() >= rpg.getInfo().getLevel())
+								&& ((PlayerKillTask) pTask.getTask()).getLevel() <= rpg.getInfo().getLevel())
 						.collect(Collectors.toList()));
 			});
 		});
