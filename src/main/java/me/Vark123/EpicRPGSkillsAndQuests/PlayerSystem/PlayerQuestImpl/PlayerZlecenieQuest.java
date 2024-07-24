@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
@@ -16,6 +18,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Events.QuestEndEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.ZlecenieController;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -127,8 +130,8 @@ public class PlayerZlecenieQuest extends APlayerQuest {
 		quest.getPrize().forEach(prize -> prize.givePrize(player));
 		
 		ZlecenieController.get().addZlecenieCooldown(player, 20*60*5);
-//		Event event = new QuestEndEvent(this);
-//		Bukkit.getPluginManager().callEvent(event);
+		Event event = new QuestEndEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
 	}
 
 	@Override

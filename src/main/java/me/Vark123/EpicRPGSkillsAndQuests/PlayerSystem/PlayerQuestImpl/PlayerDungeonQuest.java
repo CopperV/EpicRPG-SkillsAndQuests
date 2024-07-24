@@ -39,6 +39,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonContro
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonResp;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Events.DungeonEndEvent;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Events.QuestEndEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -283,6 +284,8 @@ public class PlayerDungeonQuest extends APlayerQuest {
 		});
 		
 		DungeonController.get().clearDungeon(this);
+		Event event = new QuestEndEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
 	}
 	
 	@Override
