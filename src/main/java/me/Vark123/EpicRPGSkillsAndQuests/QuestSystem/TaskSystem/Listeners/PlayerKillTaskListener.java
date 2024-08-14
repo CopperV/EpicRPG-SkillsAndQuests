@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import me.Vark123.EpicRPG.Main;
 import me.Vark123.EpicRPG.Players.RpgPlayer;
@@ -20,16 +22,20 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.PlayerKillT
 public class PlayerKillTaskListener implements Listener {
 
 	@EventHandler
-	public void onKill(EntityDeathEvent e) {
-		LivingEntity victim = e.getEntity();
-		Player killer = e.getEntity().getKiller();
-		if(!(victim instanceof Player))
+	public void onKill(PlayerDeathEvent e) {
+		Player victim = e.getEntity();
+		Entity _killer = victim.getKiller();
+		if(_killer == null) {
+			Event event = victim.getLastDamageCause();
+			if(event instanceof EntityDamageByEntityEvent)
+				_killer = ((EntityDamageByEntityEvent) event).getDamager();
+		}
+		if(_killer == null)
 			return;
-		if(killer == null)
+		if(!(_killer instanceof Player))
 			return;
 		
-		if(victim.equals(killer))
-			return;
+		Player killer = (Player) _killer;
 		
 		RpgPlayer rpg = me.Vark123.EpicRPG.Players.PlayerManager
 				.getInstance()

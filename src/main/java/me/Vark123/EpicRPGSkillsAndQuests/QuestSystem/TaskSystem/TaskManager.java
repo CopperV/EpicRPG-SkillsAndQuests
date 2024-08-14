@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.DropTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.FindTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.FishTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
@@ -107,6 +108,12 @@ public final class TaskManager {
 							.map(line -> ChatColor.translateAlternateColorCodes('&', line))
 							.collect(Collectors.toList());
 					task = new MobTalkTask(quest, id, target, message, dialog);
+				}
+				break;
+			case "drop":
+				{
+					int amount = section.getInt("ilosc");
+					task = new DropTask(quest, id, target, message, amount);
 				}
 				break;
 			default:

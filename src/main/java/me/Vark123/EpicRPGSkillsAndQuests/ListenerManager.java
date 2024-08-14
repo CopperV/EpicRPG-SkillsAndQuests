@@ -20,6 +20,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.Par
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerBlockedRegionEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyResetListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.DropTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FindTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FishTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.GiveTaskListener;
@@ -54,6 +55,7 @@ public final class ListenerManager {
 		Bukkit.getPluginManager().registerEvents(new PlayerKillTaskListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new PointsTaskListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new TalkTaskListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new DropTaskListener(), inst);
 
 		Bukkit.getPluginManager().registerEvents(new DailyResetListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new PlayerMoveOnRespListener(), inst);
