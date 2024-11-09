@@ -20,6 +20,12 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.Par
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerBlockedRegionEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyResetListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidDamageListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerBlockedRegionEntryListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerJoinListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerLeaveListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerMoveOnRespListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPortalEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.DropTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FindTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FishTaskListener;
@@ -70,6 +76,13 @@ public final class ListenerManager {
 
 		Bukkit.getPluginManager().registerEvents(new DungeonDamageListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new DungeonPortalEntryListener(), inst);
+
+		Bukkit.getPluginManager().registerEvents(new RaidDamageListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPlayerBlockedRegionEntryListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPlayerJoinListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPlayerLeaveListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPlayerMoveOnRespListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPortalEntryListener(), inst);
 		
 		CalendarEventsApi calendar = Main.getInst().getCalendar();
 		if(calendar.isRegisteredEvent("reset_daily"))

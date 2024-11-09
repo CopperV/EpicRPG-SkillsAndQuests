@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ActiveQuestRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ClassRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.FeeItemRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ItemRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.LevelRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.MMItemRequirement;
@@ -14,6 +15,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.MaxLevelRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.NoClassRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.PartyRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.QuestRequirement;
+import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.RaidPartyRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.RangaRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ReputationRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
@@ -53,6 +55,9 @@ public class RequirementManager {
 				case "party":
 					toReturn.add(new PartyRequirement());
 					return;
+				case "raid_party":
+					toReturn.add(new RaidPartyRequirement());
+					return;
 				case "quest":
 					toReturn.add(new QuestRequirement(arr[1]));
 					break;
@@ -74,6 +79,15 @@ public class RequirementManager {
 						String[] item = arr[1].split(";");
 						int amount = Integer.parseInt(item[1]);
 						toReturn.add(new TakeItemRequirement(item[0], amount));
+					}
+					break;
+				case "feeitem":
+					{
+						String[] tab = arr[1].split(";");
+						String questId = tab[0];
+						String item = tab[1];
+						int amount = Integer.parseInt(tab[2]);
+						toReturn.add(new FeeItemRequirement(questId, item, amount));
 					}
 					break;
 			}

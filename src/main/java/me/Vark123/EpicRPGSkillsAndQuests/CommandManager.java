@@ -10,6 +10,11 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Commands.Impl
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Commands.Impl.DungeonLeaveCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Commands.Impl.DungeonRespCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.GMSystem.Commands.QuestGMCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.BaseRaidCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.RaidCommandManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidLeaveCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidRespCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidWipeCommand;
 
 public final class CommandManager {
 
@@ -19,11 +24,16 @@ public final class CommandManager {
 		Bukkit.getPluginCommand("quests").setExecutor(new QuestCommand());
 		Bukkit.getPluginCommand("zlecenie").setExecutor(new ZlecenieCommand());
 		Bukkit.getPluginCommand("dungeon").setExecutor(new BaseDungeonCommand());
+		Bukkit.getPluginCommand("raid").setExecutor(new BaseRaidCommand());
 		Bukkit.getPluginCommand("questgm").setExecutor(new QuestGMCommand());
 	
 		DungeonCommandManager.get().registerSubcommand(new DungeonJoinCommand());
 		DungeonCommandManager.get().registerSubcommand(new DungeonLeaveCommand());
 		DungeonCommandManager.get().registerSubcommand(new DungeonRespCommand());
+		
+		RaidCommandManager.get().registerSubcommand(new RaidRespCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidLeaveCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidWipeCommand());
 	}
 	
 }

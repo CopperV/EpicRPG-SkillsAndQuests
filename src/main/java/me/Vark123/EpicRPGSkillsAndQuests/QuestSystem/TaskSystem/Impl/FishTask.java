@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 
 @Getter
@@ -14,11 +15,10 @@ public class FishTask extends ATask {
 
 	private int amount;
 	private boolean inRow;
-	
-	public FishTask(AQuest quest, String id,
-			String target, String message,
-			int amount, boolean inRow) {
-		super(quest, id, target, message);
+
+	public FishTask(AQuest quest, TaskGroup taskGroup, String id, String target, String message, int amount,
+			boolean inRow) {
+		super(quest, taskGroup, id, target, message);
 		this.amount = amount;
 		this.inRow = inRow;
 	}

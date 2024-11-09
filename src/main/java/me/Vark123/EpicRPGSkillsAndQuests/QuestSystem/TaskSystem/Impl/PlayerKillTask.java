@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 
 @Getter
@@ -14,11 +15,10 @@ public class PlayerKillTask extends ATask {
 
 	private int amount;
 	private int level;
-	
-	public PlayerKillTask(AQuest quest, String id,
-			String target, String message,
-			int amount, int level) {
-		super(quest, id, target, message);
+
+	public PlayerKillTask(AQuest quest, TaskGroup taskGroup, String id, String target, String message, int amount,
+			int level) {
+		super(quest, taskGroup, id, target, message);
 		this.amount = amount;
 		this.level = level;
 	}

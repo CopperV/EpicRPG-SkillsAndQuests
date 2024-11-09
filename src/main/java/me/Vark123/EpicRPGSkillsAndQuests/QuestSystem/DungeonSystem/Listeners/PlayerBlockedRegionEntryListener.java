@@ -41,7 +41,7 @@ public class PlayerBlockedRegionEntryListener implements Listener {
 		
 		Player p = e.getPlayer();
 		if(cooldown.containsKey(p) 
-				&& (new Date().getTime() - cooldown.get(p).getTime()) < 2_000)
+				&& (new Date().getTime() - cooldown.get(p).getTime()) < 250)
 			return;
 		
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
@@ -92,7 +92,7 @@ public class PlayerBlockedRegionEntryListener implements Listener {
 			return;
 		
 		String world1 = e.getFrom().getWorld().getName();
-		String world2 = e.getFrom().getWorld().getName();
+		String world2 = e.getTo().getWorld().getName();
 		if(!world1.equals(world2))
 			return;
 		
@@ -108,7 +108,7 @@ public class PlayerBlockedRegionEntryListener implements Listener {
 					
 					Set<ProtectedRegion> regions = WorldGuard.getInstance().getPlatform()
 							.getRegionContainer().createQuery()
-							.getApplicableRegions(BukkitAdapter.adapt(p.getLocation()))
+							.getApplicableRegions(BukkitAdapter.adapt(e.getTo()))
 							.getRegions();
 					if(regions == null || regions.isEmpty()) 
 						return;

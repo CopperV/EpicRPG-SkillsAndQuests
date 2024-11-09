@@ -40,8 +40,9 @@ public final class DatabaseManager {
 		prop.setProperty("password", fc.getString("DB.passwd"));
 		prop.setProperty("autoReconnect", "true");
 		try {
-			c = DriverManager.getConnection("jdbc:mysql://"+fc.getString("DB.ip")+"/"+fc.getString("DB.database")+"?useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10",prop);
+			c = DriverManager.getConnection("jdbc:mysql://"+fc.getString("DB.ip")+"/"+fc.getString("DB.database")+"?useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&allowPublicKeyRetrieval=true",prop);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			Main.getInst().getPluginLoader().disablePlugin(Main.getInst());
 			return;
 		}

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.bukkit.Material;
@@ -23,6 +22,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerStandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerWorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
@@ -98,6 +98,8 @@ public final class QuestMenuManager {
 						questItem.setType(Material.ENCHANTED_BOOK);
 					else if(pQuest instanceof PlayerDungeonQuest)
 						questItem.setType(Material.BOOK);
+					else if(pQuest instanceof PlayerRaidQuest)
+						questItem.setType(Material.SPAWNER);
 					AQuest quest = pQuest.getQuest();
 					
 					ItemMeta im = questItem.getItemMeta();
@@ -111,9 +113,9 @@ public final class QuestMenuManager {
 						im.setDisplayName("§d§lZadanie swiatowe§r: "+quest.getDisplay());
 					else if(pQuest instanceof PlayerDungeonQuest)
 						im.setDisplayName("§c§lDungeon§r: "+quest.getDisplay());
-					List<String> lore = pQuest.getTasks().stream()
-							.map(pTask -> pTask.getProgress())
-							.collect(Collectors.toList());
+					else if(pQuest instanceof PlayerRaidQuest)
+						im.setDisplayName("§6§lRajd§r: "+quest.getDisplay());
+					List<String> lore = pQuest.getQuestInfo();
 					lore.add(0, " ");
 					lore.add(0, "§eID: §7[§f"+quest.getId()+"§7]");
 					lore.add(0, "§eZlecenodawca: §r"+quest.getQuestGiver());

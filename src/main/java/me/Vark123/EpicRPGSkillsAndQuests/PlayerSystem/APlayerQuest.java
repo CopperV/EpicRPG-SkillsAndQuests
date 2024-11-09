@@ -1,6 +1,8 @@
 package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -35,5 +37,12 @@ public abstract class APlayerQuest {
 	
 	public TaskGroup getPresentTaskGroup() {
 		return quest.getTaskGroups().get(stage);
+	}
+	
+	public List<String> getQuestInfo() {
+		List<String> lore = tasks.stream()
+				.map(pTask -> pTask.getProgress())
+				.collect(Collectors.toList());
+		return lore;
 	}
 }

@@ -15,5 +15,9 @@ commands:
   zlecenie:
     aliases: [zlecenia]
   dungeon:
-    aliases: [dungeons, loch, lochy, raid, raids, rajd, rajdy]
+    aliases: [dungeons, loch, lochy]
+  raid:
+    aliases: [rajd, rajdy, raids]
+  raidadmin:
+    aliases: [raida, radmin]
   questgm:

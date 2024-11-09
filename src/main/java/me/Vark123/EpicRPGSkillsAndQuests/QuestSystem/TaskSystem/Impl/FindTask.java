@@ -6,15 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 
 @Getter
 @Setter
 public class FindTask extends ATask {
 	
-	public FindTask(AQuest quest, String id,
-			String target, String message) {
-		super(quest, id, target, message);
+	public FindTask(AQuest quest, TaskGroup taskGroup, String id, String target, String message) {
+		super(quest, taskGroup, id, target, message);
 	}
 
 	@Override

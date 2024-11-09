@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 
 @Getter
@@ -13,11 +14,9 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 public class PointsTask extends ATask {
 
 	private int amount;
-	
-	public PointsTask(AQuest quest, String id,
-			String target, String message,
-			int amount) {
-		super(quest, id, target, message);
+
+	public PointsTask(AQuest quest, TaskGroup taskGroup, String id, String target, String message, int amount) {
+		super(quest, taskGroup, id, target, message);
 		this.amount = amount;
 	}
 

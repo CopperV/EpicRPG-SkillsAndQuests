@@ -30,6 +30,8 @@ public abstract class AQuest {
 	protected Map<Integer, TaskGroup> taskGroups;
 	
 	public AQuest(ConfigurationSection questSection) {
+		if(questSection == null)
+			return;
 		this.id = questSection.getString("id");
 		this.display = ChatColor.translateAlternateColorCodes('&', questSection.getString("name"));
 		this.questGiver = ChatColor.translateAlternateColorCodes('&', questSection.getString("zleceniodawca"));

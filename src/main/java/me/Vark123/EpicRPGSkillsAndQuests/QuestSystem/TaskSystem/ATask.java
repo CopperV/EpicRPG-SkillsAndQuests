@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 
 @Getter
 @AllArgsConstructor
 public abstract class ATask {
 
 	protected AQuest quest;
+	protected TaskGroup taskGroup;
 	protected String id;
 	@Setter
 	protected String target;

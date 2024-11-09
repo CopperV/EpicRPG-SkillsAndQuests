@@ -7,20 +7,19 @@ import org.bukkit.command.CommandSender;
 import lombok.Getter;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 
 @Getter
 public class TalkTask extends ATask {
 	
 	private List<String> dialog;
-	
-	public TalkTask(AQuest quest, String id,
-			String target, String message,
-			List<String> dialog) {
-		super(quest, id, target, message);
+
+	public TalkTask(AQuest quest, TaskGroup taskGroup, String id, String target, String message, List<String> dialog) {
+		super(quest, taskGroup, id, target, message);
 		this.dialog = dialog;
 	}
-
+	
 	@Override
 	public void showInfo(CommandSender sender) {
 		super.showInfo(sender);

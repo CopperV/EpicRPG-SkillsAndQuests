@@ -29,6 +29,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.LearnItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.StatItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DailyQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.DungeonQuestItem;
+import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.RaidQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.StandardQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.WorldQuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests.ZlecenieQuestItem;
@@ -46,6 +47,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DailyQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.StandardQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.WorldQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.ZlecenieQuest;
@@ -82,6 +84,11 @@ public final class FileManager {
 	@Getter
 	private static final File dungeonsController = new File(Main.getInst().getDataFolder(), "dungeons.yml");
 
+	@Getter
+	private static final File raidDir = new File(Main.getInst().getDataFolder(), "raids");
+	@Getter
+	private static final File raidController = new File(Main.getInst().getDataFolder(), "raids.yml");
+	
 	private FileManager() { }
 	
 	public static void init() {
@@ -101,6 +108,12 @@ public final class FileManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		if(!raidController.exists())
+			try {
+				raidController.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		
 		if(oldPlayerQuestDir.exists())
 			convert();
@@ -109,6 +122,8 @@ public final class FileManager {
 			dailyDir.mkdir();
 		if(!dungeonsDir.exists())
 			dungeonsDir.mkdir();
+		if(!raidDir.exists())
+			raidDir.mkdir();
 		if(!npcDir.exists())
 			npcDir.mkdir();
 		if(!questsDir.exists())
@@ -175,6 +190,14 @@ public final class FileManager {
 				DungeonQuest quest = new DungeonQuest(fYml);
 				QuestManager.get().registerQuest(quest);
 				EpicItemManager.get().registerItem(new DungeonQuestItem(quest));
+			});
+		Arrays.asList(raidDir.listFiles()).stream()
+			.filter(file -> file.getName().endsWith(".yml"))
+			.map(YamlConfiguration::loadConfiguration)
+			.forEach(fYml -> {
+				RaidQuest quest = new RaidQuest(fYml);
+				QuestManager.get().registerQuest(quest);
+				EpicItemManager.get().registerItem(new RaidQuestItem(quest));
 			});
 	}
 	

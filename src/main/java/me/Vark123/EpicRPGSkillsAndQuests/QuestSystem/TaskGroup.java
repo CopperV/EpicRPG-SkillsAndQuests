@@ -39,7 +39,7 @@ public class TaskGroup {
 		ConfigurationSection tasksSection = groupSection.getConfigurationSection("targets");
 		tasksSection.getKeys(false).forEach(key -> {
 			ConfigurationSection taskSection = tasksSection.getConfigurationSection(key);
-			ATask task = TaskManager.get().generateTask(quest, taskSection);
+			ATask task = TaskManager.get().generateTask(quest, this, taskSection);
 			if(task == null)
 				return;
 			tasks.add(task);
