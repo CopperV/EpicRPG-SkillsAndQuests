@@ -24,6 +24,8 @@ public class PartyCreateListener implements Listener {
 		PlayerManager.get().getQuestPlayer(member.getPlayer()).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()
 				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest)
+				.map(pQuest -> (PlayerDungeonQuest) pQuest)
+				.filter(pQuest -> pQuest.getParty().isEmpty())
 				.findAny()
 				.ifPresent(dungeon -> {
 					dungeon.removeQuest();

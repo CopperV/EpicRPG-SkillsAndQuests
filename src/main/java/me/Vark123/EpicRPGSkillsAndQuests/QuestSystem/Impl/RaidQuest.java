@@ -90,18 +90,19 @@ public class RaidQuest extends AQuest {
 					.forEach(_dropSection -> {
 						double chance = _dropSection.getDouble("chance", 1);
 						boolean limited = _dropSection.getBoolean("limited", true);
+						boolean guarantable = _dropSection.getBoolean("guarantable", true);
 						switch(_dropSection.getString("type").toUpperCase()) {
 							case "COMMAND":
 								{
 									List<String> commands = _dropSection.getStringList("commands");
-									dropTable.add(new CommandDropTable(commands, chance, limited));
+									dropTable.add(new CommandDropTable(commands, chance, limited, guarantable));
 								}
 								break;
 							case "ITEM":
 								{
 									String item = _dropSection.getString("id");
 									int amount = _dropSection.getInt("amount", 1);
-									dropTable.add(new MythicMobItemDropTable(item, amount, chance, limited));
+									dropTable.add(new MythicMobItemDropTable(item, amount, chance, limited, guarantable));
 								}
 								break;
 						}

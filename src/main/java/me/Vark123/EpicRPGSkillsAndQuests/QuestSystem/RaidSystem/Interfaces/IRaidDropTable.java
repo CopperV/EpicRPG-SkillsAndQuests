@@ -6,6 +6,7 @@ public interface IRaidDropTable {
 
 	public double getChance();
 	public boolean isLimited();
+	public boolean isGuarantable();
 	public void dropToPlayer(Player p);
 	
 }

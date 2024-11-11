@@ -17,10 +17,16 @@ public class CommandDropTable implements IRaidDropTable {
 	private List<String> commands;
 	private double chance;
 	private boolean limited;
+	private boolean guarantable;
 	
 	@Override
 	public double getChance() {
 		return chance;
+	}
+
+	@Override
+	public boolean isGuarantable() {
+		return guarantable;
 	}
 
 	@Override

@@ -334,6 +334,20 @@ public final class FileManager {
 					e.printStackTrace();
 				}
 			});
+		QuestManager.get().getQuests().stream()
+			.filter(quest -> quest instanceof RaidQuest
+					&& ((RaidQuest) quest).isDefeated())
+			.map(quest -> new File(raidDir, quest.getId()+".yml"))
+			.filter(f -> f.exists())
+			.forEach(f -> {
+				YamlConfiguration fYml = YamlConfiguration.loadConfiguration(f);
+				fYml.set("defeat", true);
+				try {
+					fYml.save(f);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
 	}
 	
 	public static void updateTaskQuest(String change, PlayerTask pTask, APlayerQuest pQuest) {
@@ -403,6 +417,16 @@ public final class FileManager {
 			});
 		try {
 			fYml.save(questFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void clearPlayerRaidsFile() {
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(raidController);
+		fYml.getKeys(false).stream().forEach(key -> fYml.set(key, null));
+		try {
+			fYml.save(raidController);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

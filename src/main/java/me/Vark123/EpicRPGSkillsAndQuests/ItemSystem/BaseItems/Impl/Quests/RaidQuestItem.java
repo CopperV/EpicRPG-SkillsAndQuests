@@ -1,6 +1,5 @@
 package me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +21,11 @@ import me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.QuestItem;
 import me.Vark123.EpicRPGSkillsAndQuests.NPCSystem.EpicNPC;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidGroup;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidManager;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidObjective;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer.RaidPlayerInfo;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
@@ -118,46 +114,15 @@ public class RaidQuestItem extends QuestItem {
 		
 		p.closeInventory();
 		QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
+		RaidQuest raidQuest = (RaidQuest) quest;
 		switch(info.getType()) {
 			case GREEN_TERRACOTTA:
 				{
-					RaidQuest raidQuest = (RaidQuest) quest;
 					PartyPlayer pp = me.Vark123.EpicParty.PlayerPartySystem.PlayerManager
 							.get().getPartyPlayer(p).get();
 					if(pp.getParty().isEmpty() ||
 							(pp.getParty().isPresent() && pp.getParty().get().getLeader().equals(pp))) {
-						RaidObjective objective = raidQuest.getObjectives().get(1);
-						List<RaidGroup> startGroups = objective.getTaskGroups().stream()
-								.map(list -> list.getFirst())
-								.collect(Collectors.toList());
-						List<PlayerTask> newTasks = new LinkedList<>();
-						startGroups.stream()
-							.map(taskGroup -> taskGroup.getTasks())
-							.forEach(tasks -> tasks.stream()
-								.map(task -> new PlayerTask(p, quest, task, 0, false))
-								.forEach(newTasks::add));
-						
-						PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
-						pQuest.performAction((_p) -> {
-							QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
-							_qp.getActiveQuests().put(quest, pQuest);
-							
-							RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
-							rp.getRaidInfo().stream()
-								.filter(raidInfo -> raidInfo.getRaidId().equals(quest.getId()))
-								.findAny()
-								.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
-										() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
-							
-							if(_p.getUniqueId().equals(p.getUniqueId()))
-								_p.sendTitle("§6§lROZPOCZALES RAJD", quest.getDisplay(), 5, 10, 15);
-							else
-								_p.sendTitle("§6§lROZPOCZETO RAJD", quest.getDisplay(), 5, 10, 15);
-							_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-							_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
-						});
-						
-						RaidManager.get().prepareRaid(pQuest, new LinkedList<>(), new LinkedList<>());
+						RaidManager.get().createNewRaid(p, raidQuest);
 					} else {
 						if (PlayerManager.get().getQuestPlayer(pp.getParty().get().getLeader().getPlayer()).get()
 								.getActiveQuests().keySet().stream().filter(quest -> quest instanceof RaidQuest)
@@ -195,8 +160,7 @@ public class RaidQuestItem extends QuestItem {
 				break;
 			case ORANGE_TERRACOTTA:
 				{
-					//TODO
-					Bukkit.broadcastMessage("KOD NA KONTYNUACJE RAJDU");
+					RaidManager.get().openRaidConfigureMenu(p, raidQuest);
 				}
 				break;
 			case YELLOW_TERRACOTTA:

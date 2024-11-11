@@ -1,18 +1,18 @@
-package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl;
+package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.DungeonController;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.ARaidCommand;
 
-public class RaidWipeCommand extends ARaidCommand {
+public class RaidRespCommand extends ARaidCommand {
 
-	public RaidWipeCommand() {
-		super("wipe", new String[] {"cofnij", "checkpoint"});
+	public RaidRespCommand() {
+		super("resp", new String[] {"odrodzenie", "join", "dolacz"});
 	}
 
 	@Override
@@ -26,13 +26,8 @@ public class RaidWipeCommand extends ARaidCommand {
 					.filter(pQuest -> pQuest instanceof PlayerRaidQuest)
 					.map(pQuest -> (PlayerRaidQuest) pQuest)
 					.filter(pQuest -> pQuest.isCanJoin())
-					.filter(pQuest -> pQuest.isRespFlag())
-					.filter(pQuest -> pQuest.getParty().isEmpty()
-							|| (pQuest.getParty().isPresent()
-									&& pQuest.getParty().get().getLeader().getPlayer().getUniqueId()
-										.equals(player.getUniqueId())))
-					.filter(pQuest -> Bukkit.getWorld(pQuest.getWorld())
-							.getPlayers().size() < 1)
+					.filter(pQuest -> !pQuest.isRespFlag())
+					.filter(pQuest -> DungeonController.get().getRespTasks().containsKey(player))
 					.findFirst()
 					.ifPresentOrElse(pQuest -> {},
 							() -> returnValue.setFalse());
@@ -47,13 +42,13 @@ public class RaidWipeCommand extends ARaidCommand {
 			.stream()
 			.filter(pQuest -> pQuest instanceof PlayerRaidQuest)
 			.findFirst()
-			.ifPresent(raid -> ((PlayerRaidQuest) raid).wipeRaid());
+			.ifPresent(raid -> ((PlayerRaidQuest) raid).createRespTask(qp));
 		return true;
 	}
 
 	@Override
 	public void showCorrectUsage(Player sender) {
-		sender.sendMessage("  §f§p/raid wipe §7- Cofnij rajd do ostatniego punktu kontrolnego");
+		sender.sendMessage("  §f§o/raid dolacz §7- Przeteleportuj sie na rajd uzywajac");
 	}
 
 }

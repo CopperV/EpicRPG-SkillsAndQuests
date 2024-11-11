@@ -3,7 +3,6 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,11 +15,16 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -28,15 +32,23 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 
+import io.github.rysefoxx.inventory.plugin.content.IntelligentItem;
+import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
+import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
+import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import io.lumine.mythic.api.adapters.AbstractLocation;
 import io.lumine.mythic.api.adapters.AbstractWorld;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.spawning.spawners.SpawnerManager;
 import lombok.Getter;
+import me.Vark123.EpicRPG.Utils.Utils;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
@@ -47,7 +59,7 @@ public final class RaidManager {
 
 	private static final RaidManager inst = new RaidManager();
 	
-	private final String raidPrefix = "§7[§x§e§7§5§b§1§f§lD§x§e§e§8§2§4§8§lU§x§f§6§a§9§7§2§lN§x§f§d§d§0§9§b§lG§x§e§a§9§d§7§9§lE§x§d§6§6§9§5§8§lO§x§c§3§3§6§3§6§lN§7]";
+	private final String raidPrefix = "§7[§x§E§C§B§5§3§A§lR§x§E§9§C§8§5§0§lA§x§E§6§D§B§6§7§lJ§x§E§3§E§E§7§D§lD§7]";
 	
 	private Map<UUID, RaidPlayer> raidPlayers = new LinkedHashMap<>();
 	private final Map<Player, BukkitTask> respTasks = new ConcurrentHashMap<>();
@@ -61,6 +73,104 @@ public final class RaidManager {
 		if(!raidPlayers.containsKey(uid))
 			raidPlayers.put(uid, new RaidPlayer(player));
 		return raidPlayers.get(uid);
+	}
+	
+	public void createNewRaid(Player p, RaidQuest raidQuest) {
+		RaidObjective objective = raidQuest.getObjectives().get(1);
+		List<RaidGroup> startGroups = objective.getTaskGroups().stream()
+				.map(list -> list.getFirst())
+				.collect(Collectors.toList());
+		List<PlayerTask> newTasks = new LinkedList<>();
+		startGroups.stream()
+			.map(taskGroup -> taskGroup.getTasks())
+			.forEach(tasks -> tasks.stream()
+				.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
+				.forEach(newTasks::add));
+		
+		PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
+		pQuest.performAction((_p) -> {
+			QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
+			_qp.getActiveQuests().put(raidQuest, pQuest);
+			
+			pQuest.getPlayerBossFightContainer().add(_p);
+			
+			RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+			rp.getRaidInfo().stream()
+				.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+				.findAny()
+				.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
+						() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
+			
+			if(_p.getUniqueId().equals(p.getUniqueId()))
+				_p.sendTitle("§6§lROZPOCZALES RAJD", raidQuest.getDisplay(), 5, 10, 15);
+			else
+				_p.sendTitle("§6§lROZPOCZETO RAJD", raidQuest.getDisplay(), 5, 10, 15);
+			_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
+			_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+		});
+		
+		prepareRaid(pQuest, new LinkedList<>(), new LinkedList<>());
+	}
+	
+	public void continueRaid(Player p, RaidQuest raidQuest, RaidObjective raidObjective) {
+		int objectiveId = raidQuest.getObjectives().entrySet()
+				.stream()
+				.filter(entry -> entry.getValue().equals(raidObjective))
+				.map(entry -> entry.getKey())
+				.findAny()
+				.orElse(-1);
+		if(objectiveId < 1) {
+			createNewRaid(p, raidQuest);
+			return;
+		}
+		List<RaidObjective> completedObjectives = raidQuest.getObjectives().entrySet()
+				.stream()
+				.filter(entry -> entry.getKey() < objectiveId)
+				.map(entry -> entry.getValue())
+				.collect(Collectors.toList());
+		List<String> completedGroups = completedObjectives.stream()
+				.flatMap(objective -> objective.getTaskGroups().stream())
+				.flatMap(groupList -> groupList.stream())
+				.map(group -> group.getId())
+				.collect(Collectors.toList());
+		List<String> strCompletedObjectives = completedObjectives.stream()
+				.map(objective -> objective.getId())
+				.collect(Collectors.toList());
+		
+		List<RaidGroup> startGroups = raidObjective.getTaskGroups()
+				.stream()
+				.map(groupList -> groupList.getFirst())
+				.collect(Collectors.toList());
+		List<PlayerTask> newTasks = new LinkedList<>();
+		startGroups.stream()
+			.map(taskGroup -> taskGroup.getTasks())
+			.forEach(tasks -> tasks.stream()
+				.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
+				.forEach(newTasks::add));
+		
+		PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
+		pQuest.performAction((_p) -> {
+			QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
+			_qp.getActiveQuests().put(raidQuest, pQuest);
+			
+			pQuest.getPlayerBossFightContainer().add(_p);
+			
+			RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+			rp.getRaidInfo().stream()
+				.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+				.findAny()
+				.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
+						() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
+			
+			if(_p.getUniqueId().equals(p.getUniqueId()))
+				_p.sendTitle("§6§lKONTYNUUJESZ RAJD", raidQuest.getDisplay(), 5, 10, 15);
+			else
+				_p.sendTitle("§6§lKONTYNUACJA RAJDU", raidQuest.getDisplay(), 5, 10, 15);
+			_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
+			_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+		});
+		
+		prepareRaid(pQuest, strCompletedObjectives, completedGroups);
 	}
 	
 	public void prepareRaid(PlayerRaidQuest raidQuest, List<String> completedObjectives, List<String> completedGroups) {
@@ -210,7 +320,7 @@ public final class RaidManager {
 				raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eDolacz na niego przy pomocy komendy §f§o/rajd");
 				
 				raidQuest.setCanJoin(true);
-				raidQuest.setStartTime(new Date().getTime());
+//				raidQuest.setStartTime(new Date().getTime());
 			}
 		}.runTask(Main.getInst());
 	}
@@ -345,6 +455,61 @@ public final class RaidManager {
 		UUID uid = player.getUniqueId();
 		RaidPlayer raidPlayer = raidPlayers.remove(uid);
 		return Optional.ofNullable(raidPlayer);
+	}
+	
+	public void openRaidConfigureMenu(Player player, RaidQuest raid) {
+		RaidPlayer rp = loadPlayer(player);
+		rp.getRaidInfo().stream()
+			.filter(raidInfo -> raidInfo.getRaidId().equals(raid.getId()))
+			.findAny()
+			.ifPresentOrElse(raidInfo -> {
+				List<Integer> completedObjectives = raidInfo.getCompletedObjectives()
+						.stream()
+						.map(objective -> raid.getObjectives().entrySet().stream()
+								.filter(entry -> entry.getValue().getId().equals(objective))
+								.map(entry -> entry.getKey())
+								.findAny())
+						.filter(objId -> objId.isPresent())
+						.map(objId -> objId.get())
+						.collect(Collectors.toList());
+				int rows = (int) Utils.limitValue(1, 6, completedObjectives.size() - 2 / 9 + 1);
+				RyseInventory.builder()
+					.title("§6§lWybierz etap rajdu")
+					.rows(rows)
+					.disableUpdateTask()
+					.provider(new InventoryProvider() {
+						@Override
+						public void init(Player player, InventoryContents contents) {
+							ItemStack startNew = new ItemStack(Material.TOTEM_OF_UNDYING);{
+								ItemMeta im = startNew.getItemMeta();
+								im.setDisplayName("§eZacznij od nowa");
+								startNew.setItemMeta(im);
+							}
+							contents.set(0, IntelligentItem.of(startNew, e -> {
+								createNewRaid(player, raid);
+								e.getWhoClicked().closeInventory();
+							}));
+							
+							for(int i = 0; i < completedObjectives.size() && (i+1) < rows*9; ++i) {
+								int slot = i+1;
+								RaidObjective targetObjective = raid.getObjectives().get(completedObjectives.get(i));
+								ItemStack objectiveItem = new ItemStack(Material.END_CRYSTAL);{
+									ItemMeta im = objectiveItem.getItemMeta();
+									im.setDisplayName(targetObjective.getDisplay());
+									objectiveItem.setItemMeta(im);
+								}
+								contents.set(slot, IntelligentItem.of(objectiveItem, e -> {
+									continueRaid(player, raid, targetObjective);
+									e.getWhoClicked().closeInventory();
+								}));
+							}
+						}
+					})
+					.build(Main.getInst())
+					.open(player);
+			}, () -> {
+				createNewRaid(player, raid);
+			});
 	}
 	
 }

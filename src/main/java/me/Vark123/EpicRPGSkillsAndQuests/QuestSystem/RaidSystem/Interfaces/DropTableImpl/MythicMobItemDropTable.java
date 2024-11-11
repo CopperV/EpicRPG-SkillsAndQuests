@@ -17,10 +17,16 @@ public class MythicMobItemDropTable implements IRaidDropTable {
 	private int amount;
 	private double chance;
 	private boolean limited;
+	private boolean guarantable;
 	
 	@Override
 	public double getChance() {
 		return chance;
+	}
+
+	@Override
+	public boolean isGuarantable() {
+		return guarantable;
 	}
 
 	@Override

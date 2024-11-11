@@ -1,4 +1,4 @@
-package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl;
+package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.bukkit.Bukkit;
@@ -73,7 +73,7 @@ public class RaidLeaveCommand extends ARaidCommand {
 
 	@Override
 	public void showCorrectUsage(Player sender) {
-		sender.sendMessage("  §f§p/raid opusc §7- Zrezygnuj ze swojego udzialu w rajdzie oraz calej druzyny, jesli jestes jej liderem");
+		sender.sendMessage("  §f§o/raid opusc §7- Zrezygnuj ze swojego udzialu w rajdzie oraz calej druzyny, jesli jestes jej liderem");
 	}
 
 }

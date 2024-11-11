@@ -12,9 +12,14 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Commands.Impl
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.GMSystem.Commands.QuestGMCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.BaseRaidCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.RaidCommandManager;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidLeaveCommand;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidRespCommand;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.RaidWipeCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDmgCounterStartCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDmgCounterStopCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDropTableCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidRespBlockCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidRespUnlockCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidLeaveCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidRespCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidWipeCommand;
 
 public final class CommandManager {
 
@@ -34,6 +39,11 @@ public final class CommandManager {
 		RaidCommandManager.get().registerSubcommand(new RaidRespCommand());
 		RaidCommandManager.get().registerSubcommand(new RaidLeaveCommand());
 		RaidCommandManager.get().registerSubcommand(new RaidWipeCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidDmgCounterStartCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidDmgCounterStopCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidRespBlockCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidRespUnlockCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidDropTableCommand());
 	}
 	
 }

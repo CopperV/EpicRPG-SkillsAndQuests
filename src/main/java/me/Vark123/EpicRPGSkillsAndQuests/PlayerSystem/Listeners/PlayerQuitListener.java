@@ -11,6 +11,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.DatabaseManager;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerZlecenieQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
@@ -49,6 +50,12 @@ public class PlayerQuitListener implements Listener {
 				.map(pQuest -> (PlayerDungeonQuest) pQuest)
 				.findFirst()
 				.ifPresent(dungeon -> dungeon.removeQuest());
+			qp.getActiveQuests().values().stream()
+				.filter(pQuest -> pQuest instanceof PlayerRaidQuest
+						&& ((PlayerRaidQuest) pQuest).getParty().isEmpty())
+				.map(pQuest -> (PlayerRaidQuest) pQuest)
+				.findFirst()
+				.ifPresent(raid -> raid.removeQuest());
 		});
 		DungeonController.get().getRespTasks().remove(p);
 		FileManager.savePlayer(p);

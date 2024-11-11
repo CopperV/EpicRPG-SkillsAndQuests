@@ -20,12 +20,21 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.Par
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerBlockedRegionEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyResetListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidBossDeathListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidDamageListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyCreateListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyJoinListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyKickListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyLeaderChangeListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyLeaveListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyRemoveListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerBlockedRegionEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerJoinListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerLeaveListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPortalEntryListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidsResetListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.MMExtension.RaidCustomConditionLoadListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.DropTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FindTaskListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Listeners.FishTaskListener;
@@ -83,11 +92,25 @@ public final class ListenerManager {
 		Bukkit.getPluginManager().registerEvents(new RaidPlayerLeaveListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new RaidPlayerMoveOnRespListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new RaidPortalEntryListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyCreateListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyJoinListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyKickListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyLeaderChangeListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyLeaveListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidPartyRemoveListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidBossDeathListener(), inst);
+		Bukkit.getPluginManager().registerEvents(new RaidsResetListener(), inst);
+		
+
+		Bukkit.getPluginManager().registerEvents(new RaidCustomConditionLoadListener(), inst);
 		
 		CalendarEventsApi calendar = Main.getInst().getCalendar();
 		if(calendar.isRegisteredEvent("reset_daily"))
 			calendar.removeEvent("reset_daily");
 		calendar.addEvent("reset_daily", "every day", "00:05");
+		if(calendar.isRegisteredEvent("reset_raids"))
+			calendar.removeEvent("reset_raids");
+		calendar.addEvent("reset_raids", "friday", "00:05");
 	}
 	
 }

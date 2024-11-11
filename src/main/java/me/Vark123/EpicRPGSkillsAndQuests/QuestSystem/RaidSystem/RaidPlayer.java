@@ -29,8 +29,6 @@ public class RaidPlayer {
 		loaded = true;
 	}
 	
-	//TODO
-	//Ogarniecie zliczania czasu
 	@Getter
 	public static class RaidPlayerInfo {
 		
@@ -46,7 +44,7 @@ public class RaidPlayer {
 			this.guaranteedDrops = new LinkedList<>();
 			String drop = quest.getDropTables().keySet().stream()
 				.filter(mob -> quest.getDropTables().get(mob).stream()
-						.filter(dropTable -> dropTable.isLimited())
+						.filter(dropTable -> dropTable.isGuarantable())
 						.findAny().isPresent())
 				.collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
 					Collections.shuffle(list);

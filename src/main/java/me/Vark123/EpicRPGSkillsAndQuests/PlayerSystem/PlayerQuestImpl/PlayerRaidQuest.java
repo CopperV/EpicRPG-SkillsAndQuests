@@ -1,22 +1,26 @@
 package me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -41,8 +45,10 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidObjective;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidResp;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Events.RaidEndEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IPerformPlayerOnRaidAction;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IPerformPlayerRaidAction;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IRaidDropTable;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.RuleImpl.ObjectiveCompleteRule;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 import me.Vark123.EpicRPGSkillsAndQuests.Utils.ChainLinkedList;
@@ -58,6 +64,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 	
 	private boolean respFlag = false;
 	private String respBlockerTaskGroupId = null;
+	private List<Player> playerBossFightContainer = new LinkedList<>();
 
 	@Setter(value = AccessLevel.NONE)
 	private long randomizedValue;
@@ -67,11 +74,10 @@ public class PlayerRaidQuest extends APlayerQuest {
 	private boolean damageFlag = false;
 	private Map<Player, Double> damageCounter;
 	
-	private long startTime;
-	
 	private List<String> activeObjectives = new LinkedList<>();
 	private List<String> completedObjectives = new LinkedList<>();
 	private List<String> completedGroups = new LinkedList<>();
+	private List<String> defeatedBosses = new LinkedList<>();
 
 	public PlayerRaidQuest(Player player, RaidQuest quest, int stage, Collection<PlayerTask> tasks) {
 		super(player, quest, stage, tasks);
@@ -159,40 +165,52 @@ public class PlayerRaidQuest extends APlayerQuest {
 					}
 				});
 		});
+		if(tasks == null || tasks.isEmpty())
+			endRaid();
 	}
 
 	@Override
-	public void updateQuest() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void updateQuest() { }
 
 	@Override
-	public void changeQuestStage(int newStage) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void changeQuestStage(int newStage) { }
 
 	@Override
-	public void endQuest() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void endQuest() { }
 
 	@Override
 	public void removeQuest() {
 		performAction(_p -> {
 			QuestPlayer qp = PlayerManager.get().getQuestPlayer(_p).get();
 			qp.getActiveQuests().remove(quest);
-			if(_p.getUniqueId().equals(player.getUniqueId())) {
-				_p.sendMessage(RaidManager.get().getRaidPrefix()+
-						" §eOpusciles rajd §r"+quest.getDisplay());
-			} else {
-				_p.sendMessage(RaidManager.get().getRaidPrefix()+
-						" §eLider opuscil rajd §r"+quest.getDisplay());
-			}
 		});
 		RaidManager.get().clearRaid(this);
+	}
+	
+	private void endRaid() {
+		String prefix = RaidManager.get().getRaidPrefix();
+		RaidQuest raid = (RaidQuest) quest;
+		boolean defeat = raid.isDefeated();
+		
+		if(defeat)
+			Bukkit.broadcastMessage(prefix+" §eDruzyna §7"+partyPlayer.getPlayer().getName()+" §eukonczyla rajd §r"+raid.getDisplay());
+		else
+			Bukkit.broadcastMessage(prefix+" §eDruzyna §7"+partyPlayer.getPlayer().getName()+" §ejako pierwsza ukonczyla rajd §r"+raid.getDisplay());
+
+		var max = damageCounter.entrySet()
+			.stream()
+			.max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+			.get();
+		
+		Bukkit.broadcastMessage(prefix+" §eNajwieksze obrazenia zadal §7"+max.getKey().getName()+" §8[§f"+String.format("%.2f", max.getValue())+"§8]");
+		Bukkit.broadcastMessage(prefix+" §eDo zwyciestwa przyczynili sie:");
+		damageCounter.forEach((p, dmg) -> {
+			Bukkit.broadcastMessage("§4§l» §7"+p.getName()+" §e- §f"+String.format("%.2f", dmg)+" §eobrazen");
+		});
+		
+		raid.setDefeated(true);
+		Event event = new RaidEndEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
 	}
 
 	@Override
@@ -421,11 +439,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 			}
 		}.runTask(Main.getInst());
 	}
-	
-	public void tryEndRaid() {
-		
-	}
-	
+
 	public Optional<Party> getParty() {
 		return Optional.ofNullable(party);
 	}
@@ -526,6 +540,52 @@ public class PlayerRaidQuest extends APlayerQuest {
 		double presentDmg = damageCounter.getOrDefault(player, 0.);
 		presentDmg += dmg;
 		damageCounter.put(player, presentDmg);
+	}
+	
+	public void generateDrops(String mobId) {
+		if(defeatedBosses.contains(mobId))
+			return;
+		
+		RaidQuest raid = (RaidQuest) quest;
+		if(!raid.getDropTables().containsKey(mobId))
+			return;
+		
+		defeatedBosses.add(mobId);
+		Random rand = new Random();
+		List<IRaidDropTable> dropTable = raid.getDropTables().get(mobId);
+		playerBossFightContainer.stream()
+			.map(RaidManager.get()::loadPlayer)
+			.forEach(rp -> {
+				rp.getRaidInfo().stream()
+					.filter(raidInfo -> raidInfo.getRaidId().equals(raid.getId()))
+					.findAny()
+					.ifPresent(raidInfo -> {
+						List<IRaidDropTable> personalizedDropTable = new LinkedList<>();
+						MutableBoolean guarantableFlag = new MutableBoolean(
+								!raidInfo.getDropped().contains(mobId) && raidInfo.getGuaranteedDrops().contains(mobId));
+						dropTable.stream()
+							.filter(drop -> raidInfo.getDropped().contains(mobId) && drop.isLimited())
+							.filter(drop -> drop.getChance() >= rand.nextDouble())
+							.forEach(drop -> {
+								personalizedDropTable.add(drop);
+								if(drop.isGuarantable() && guarantableFlag.isTrue())
+									guarantableFlag.setFalse();
+							});
+						if(guarantableFlag.isTrue()) {
+							IRaidDropTable guaranteedDrop = dropTable.stream()
+								.filter(drop -> drop.isGuarantable())
+								.collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+									Collections.shuffle(list, rand);
+									return list.size() > 0 ? list.get(0) : null;
+								}));
+							if(guaranteedDrop != null)
+								personalizedDropTable.add(guaranteedDrop);
+						}
+						if(!raidInfo.getDropped().contains(mobId))
+							raidInfo.getDropped().add(mobId);
+						personalizedDropTable.forEach(drop -> drop.dropToPlayer(rp.getPlayer()));
+					});
+			});
 	}
 	
 }

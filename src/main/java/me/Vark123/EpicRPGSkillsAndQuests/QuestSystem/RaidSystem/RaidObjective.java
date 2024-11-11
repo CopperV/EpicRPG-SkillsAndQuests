@@ -28,6 +28,7 @@ public class RaidObjective {
 	
 	private String id;
 	private RaidResp respLocation;
+	private String display;				//Wykorzystywane do menu kontynuacji rajdu
 	private String message;
 	
 	private Collection<ChainLinkedList<RaidGroup>> taskGroups;
@@ -42,7 +43,8 @@ public class RaidObjective {
 		double respY = objectiveSection.getDouble("resp.y");
 		double respZ = objectiveSection.getDouble("resp.z");
 		this.respLocation = new RaidResp(respX, respY, respZ);
-		
+
+		this.display = ChatColor.translateAlternateColorCodes('&', objectiveSection.getString("display"));
 		if(objectiveSection.contains("message"))
 			this.message = ChatColor.translateAlternateColorCodes('&', objectiveSection.getString("message"));
 		

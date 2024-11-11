@@ -1,4 +1,4 @@
-package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners;
+package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,14 +9,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import me.Vark123.EpicParty.PlayerPartySystem.PartyPlayer;
-import me.Vark123.EpicParty.PlayerPartySystem.Events.PartyKickEvent;
+import me.Vark123.EpicParty.PlayerPartySystem.Events.PartyLeaveEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
-import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerDungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 
-public class PartyKickListener implements Listener {
+public class RaidPartyLeaveListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onKick(PartyKickEvent e) {
+	public void onLeave(PartyLeaveEvent e) {
 		if(e.isCancelled())
 			return;
 		
@@ -25,12 +25,12 @@ public class PartyKickListener implements Listener {
 		
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()
-				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest)
-				.map(pQuest -> (PlayerDungeonQuest) pQuest)
+				.filter(pQuest -> pQuest instanceof PlayerRaidQuest)
+				.map(pQuest -> (PlayerRaidQuest) pQuest)
 				.findAny()
-				.ifPresent(dungeon -> {
-					qp.getActiveQuests().remove(dungeon.getQuest());
-					if(p.isOnline() && p.getWorld().getName().equals(dungeon.getWorld())) {
+				.ifPresent(raid -> {
+					qp.getActiveQuests().remove(raid.getQuest());
+					if(p.isOnline() && p.getWorld().getName().equals(raid.getWorld())) {
 						World mainWorld = Bukkit.getWorld("F_RPG");
 						Location mainLoc = mainWorld.getSpawnLocation();
 						p.teleport(mainLoc);

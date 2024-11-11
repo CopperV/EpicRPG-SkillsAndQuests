@@ -21,17 +21,16 @@ public class PartyJoinListener implements Listener {
 		PartyPlayer leader = party.getLeader();
 		PartyPlayer member = e.getNewMember();
 
-
-		//Probably useless code
-		//At this moment players should have no party
-//		PlayerManager.get().getQuestPlayer(member.getPlayer()).ifPresent(qp -> {
-//			qp.getActiveQuests().values().stream()
-//				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest)
-//				.findAny()
-//				.ifPresent(dungeon -> {
-//					dungeon.removeQuest();
-//				});
-//		});
+		PlayerManager.get().getQuestPlayer(member.getPlayer()).ifPresent(qp -> {
+			qp.getActiveQuests().values().stream()
+				.filter(pQuest -> pQuest instanceof PlayerDungeonQuest)
+				.map(pQuest -> (PlayerDungeonQuest) pQuest)
+				.filter(pQuest -> pQuest.getParty().isEmpty())
+				.findAny()
+				.ifPresent(dungeon -> {
+					dungeon.removeQuest();
+				});
+		});
 		
 		PlayerManager.get().getQuestPlayer(leader.getPlayer()).ifPresent(qp -> {
 			qp.getActiveQuests().values().stream()

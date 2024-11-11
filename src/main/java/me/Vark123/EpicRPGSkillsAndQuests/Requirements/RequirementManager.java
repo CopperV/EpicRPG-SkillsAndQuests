@@ -15,7 +15,6 @@ import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.MaxLevelRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.NoClassRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.PartyRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.QuestRequirement;
-import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.RaidPartyRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.RangaRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.ReputationRequirement;
 import me.Vark123.EpicRPGSkillsAndQuests.Requirements.Impl.TakeItemRequirement;
@@ -54,9 +53,6 @@ public class RequirementManager {
 					break;
 				case "party":
 					toReturn.add(new PartyRequirement());
-					return;
-				case "raid_party":
-					toReturn.add(new RaidPartyRequirement());
 					return;
 				case "quest":
 					toReturn.add(new QuestRequirement(arr[1]));
