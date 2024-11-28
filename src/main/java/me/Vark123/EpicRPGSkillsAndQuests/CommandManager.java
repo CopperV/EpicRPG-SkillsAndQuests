@@ -12,11 +12,14 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Commands.Impl
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.GMSystem.Commands.QuestGMCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.BaseRaidCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.RaidCommandManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidCompleteTaskCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDmgCounterStartCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDmgCounterStopCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidMobClearCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidDropTableCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidRespBlockCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidRespUnlockCommand;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Admin.RaidSchemPasteCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidLeaveCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidRespCommand;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.Common.RaidWipeCommand;
@@ -44,6 +47,9 @@ public final class CommandManager {
 		RaidCommandManager.get().registerSubcommand(new RaidRespBlockCommand());
 		RaidCommandManager.get().registerSubcommand(new RaidRespUnlockCommand());
 		RaidCommandManager.get().registerSubcommand(new RaidDropTableCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidMobClearCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidSchemPasteCommand());
+		RaidCommandManager.get().registerSubcommand(new RaidCompleteTaskCommand());
 	}
 	
 }

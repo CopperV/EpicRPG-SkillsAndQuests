@@ -35,6 +35,8 @@ public class PlayerQuitListener implements Listener {
 	private void save(Player p) {
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			qp.getActiveQuests().values().forEach(pQuest -> {
+				if(pQuest instanceof PlayerRaidQuest)
+					return;
 				TaskGroup taskGroup = pQuest.getPresentTaskGroup();
 				taskGroup.getEventsByType(EventCall.DISCONNECT).ifPresent(event -> event.executeEvent(pQuest));
 			});

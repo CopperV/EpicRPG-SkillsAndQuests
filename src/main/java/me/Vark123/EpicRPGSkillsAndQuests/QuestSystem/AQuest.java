@@ -44,12 +44,14 @@ public abstract class AQuest {
 		
 		this.taskGroups = new LinkedHashMap<>();
 		ConfigurationSection taskGroupsSection = questSection.getConfigurationSection("stopnie");
-		taskGroupsSection.getKeys(false).forEach(key -> {
-			if(!StringUtils.isNumeric(key))
-				return;
-			Integer groupNum = Integer.parseInt(key);
-			taskGroups.put(groupNum, new TaskGroup(taskGroupsSection.getConfigurationSection(key), this));
-		});
+		if(taskGroupsSection != null) {
+			taskGroupsSection.getKeys(false).forEach(key -> {
+				if(!StringUtils.isNumeric(key))
+					return;
+				Integer groupNum = Integer.parseInt(key);
+				taskGroups.put(groupNum, new TaskGroup(taskGroupsSection.getConfigurationSection(key), this));
+			});
+		}
 	}
 	
 }

@@ -4,7 +4,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 
@@ -14,20 +13,17 @@ public class BaseRaidCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(!cmd.getName().equalsIgnoreCase("raid"))
 			return false;
-		if(!(sender instanceof Player))
-			return false;
 		
-		Player p = (Player) sender;
 		if(args.length == 0) {
-			showCorrectUsage(p);
+			showCorrectUsage(sender);
 			return false;
 		}
 		
 		MutableBoolean returnValue = new MutableBoolean(true);
 		RaidCommandManager.get().getRaidSubcommand(args[0].toLowerCase())
 			.ifPresentOrElse(subcmd -> {
-				if(!subcmd.canUse(p)) {
-					showCorrectUsage(p);
+				if(!subcmd.canUse(sender)) {
+					showCorrectUsage(sender);
 					returnValue.setFalse();
 					return;
 				}
@@ -35,32 +31,32 @@ public class BaseRaidCommand implements CommandExecutor {
 					String[] newArgs = new String[args.length - 1];
 					for(int i = 0; i < newArgs.length; ++i)
 						newArgs[i] = args[i+1];
-					boolean res = subcmd.useCommand(p, newArgs);
+					boolean res = subcmd.useCommand(sender, newArgs);
 					if(!res)
-						subcmd.showCorrectUsage(p);
+						subcmd.showCorrectUsage(sender);
 					returnValue.setValue(res);
 				} else {
-					boolean res = subcmd.useCommand(p);
+					boolean res = subcmd.useCommand(sender);
 					if(!res)
-						subcmd.showCorrectUsage(p);
+						subcmd.showCorrectUsage(sender);
 					returnValue.setValue(res);
 				}
 			}, () -> {
-				showCorrectUsage(p);
+				showCorrectUsage(sender);
 				returnValue.setFalse();
 			});
 		return returnValue.booleanValue();
 	}
 	
-	private void showCorrectUsage(Player p) {
-		p.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §7Poprawne uzycie komendy §f§o/raid");
+	private void showCorrectUsage(CommandSender sender) {
+		sender.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §7Poprawne uzycie komendy §f§o/raid");
 		RaidCommandManager.get().getRaidSubcommands().keySet().stream()
 			.filter(key -> {
 				ARaidCommand cmd = RaidCommandManager.get().getRaidSubcommand(key).get();
 				return cmd.getCmd().equals(key)
-						&& cmd.canUse(p);
+						&& cmd.canUse(sender);
 			}).forEach(key -> {
-				RaidCommandManager.get().getRaidSubcommand(key).get().showCorrectUsage(p);
+				RaidCommandManager.get().getRaidSubcommand(key).get().showCorrectUsage(sender);
 			});
 	}
 	

@@ -25,6 +25,8 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.AQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.DungeonQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.ATask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.TaskManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.FishTask;
@@ -75,6 +77,8 @@ private static final GMMenuClickEvents container = new GMMenuClickEvents();
 			
 			PlayerManager.get().getQuestPlayer(p).ifPresentOrElse(qp -> {
 				QuestManager.get().getQuestById(questId).ifPresentOrElse(quest -> {
+					if(quest instanceof RaidQuest || quest instanceof DungeonQuest)
+						return;
 					if(!qp.getActiveQuests().containsKey(quest)) {
 						viewer.sendMessage(Config.get().getPrefix()+" §7"+p.getName()+" §cnie wykonuje obecnie zadania §r"+quest.getDisplay());
 						viewer.closeInventory();

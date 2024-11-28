@@ -1,7 +1,7 @@
 package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import io.lumine.mythic.api.mobs.MythicMob;
@@ -11,11 +11,10 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaid
 
 public class RaidBossDeathListener implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onDeath(MythicMobDeathEvent e) {
 		MythicMob mMob = e.getMobType();
 		String mmId = mMob.getInternalName();
-		Bukkit.broadcastMessage(mmId);
 		
 		e.getEntity().getWorld().getPlayers().stream()
 			.map(PlayerManager.get()::getQuestPlayer)

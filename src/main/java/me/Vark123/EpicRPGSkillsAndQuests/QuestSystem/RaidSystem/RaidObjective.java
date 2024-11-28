@@ -31,7 +31,7 @@ public class RaidObjective {
 	private String display;				//Wykorzystywane do menu kontynuacji rajdu
 	private String message;
 	
-	private Collection<ChainLinkedList<RaidGroup>> taskGroups;
+	private Collection<ChainLinkedList<RaidGroup>> taskGroups = new LinkedList<>();
 	private Map<ERaidEventType, Collection<IRaidEvent>> events = new LinkedHashMap<>();
 	private Collection<IRaidObjectiveRule> rules = new ArrayList<>();
 	
@@ -44,7 +44,8 @@ public class RaidObjective {
 		double respZ = objectiveSection.getDouble("resp.z");
 		this.respLocation = new RaidResp(respX, respY, respZ);
 
-		this.display = ChatColor.translateAlternateColorCodes('&', objectiveSection.getString("display"));
+		if(objectiveSection.contains("display"))
+			this.display = ChatColor.translateAlternateColorCodes('&', objectiveSection.getString("display"));
 		if(objectiveSection.contains("message"))
 			this.message = ChatColor.translateAlternateColorCodes('&', objectiveSection.getString("message"));
 		
@@ -64,7 +65,7 @@ public class RaidObjective {
 				outerSection.getKeys(false).stream()
 					.filter(outerSection::isConfigurationSection)
 					.map(outerSection::getConfigurationSection)
-					.map(innerSection -> new RaidGroup(section, quest, this))
+					.map(innerSection -> new RaidGroup(innerSection, quest, this))
 					.forEach(groups::add);
 				taskGroups.add(groups);
 			});
@@ -85,7 +86,7 @@ public class RaidObjective {
 					.map(eventsSection::getConfigurationSection)
 					.forEach(eventSection -> {
 						switch(eventSection.getString("type", "UNKNOWN").toUpperCase()) {
-							case "COMMAND-LIST":
+							case "COMMAND_LIST":
 								{
 									List<String> commands = eventSection.getStringList("cmd");
 									localEvents.add(new CommandListEvent(commands));

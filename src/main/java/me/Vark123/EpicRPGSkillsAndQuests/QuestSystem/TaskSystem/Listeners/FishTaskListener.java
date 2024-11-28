@@ -55,7 +55,8 @@ public class FishTaskListener implements Listener {
 			pTask.addProgress(1);
 			if(pTask.getIntProgress() >= ((FishTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 
@@ -93,7 +94,8 @@ public class FishTaskListener implements Listener {
 			pTask.addProgress(1);
 			if(pTask.getIntProgress() >= ((FishTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 	

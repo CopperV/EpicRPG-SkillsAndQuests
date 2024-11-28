@@ -76,101 +76,122 @@ public final class RaidManager {
 	}
 	
 	public void createNewRaid(Player p, RaidQuest raidQuest) {
-		RaidObjective objective = raidQuest.getObjectives().get(1);
-		List<RaidGroup> startGroups = objective.getTaskGroups().stream()
-				.map(list -> list.getFirst())
-				.collect(Collectors.toList());
-		List<PlayerTask> newTasks = new LinkedList<>();
-		startGroups.stream()
-			.map(taskGroup -> taskGroup.getTasks())
-			.forEach(tasks -> tasks.stream()
-				.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
-				.forEach(newTasks::add));
-		
-		PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
-		pQuest.performAction((_p) -> {
-			QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
-			_qp.getActiveQuests().put(raidQuest, pQuest);
+		new BukkitRunnable() {
 			
-			pQuest.getPlayerBossFightContainer().add(_p);
-			
-			RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
-			rp.getRaidInfo().stream()
-				.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
-				.findAny()
-				.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
-						() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
-			
-			if(_p.getUniqueId().equals(p.getUniqueId()))
-				_p.sendTitle("§6§lROZPOCZALES RAJD", raidQuest.getDisplay(), 5, 10, 15);
-			else
-				_p.sendTitle("§6§lROZPOCZETO RAJD", raidQuest.getDisplay(), 5, 10, 15);
-			_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-			_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
-		});
-		
-		prepareRaid(pQuest, new LinkedList<>(), new LinkedList<>());
+			@Override
+			public void run() {
+				RaidObjective objective = raidQuest.getObjectives().get(1);
+				List<RaidGroup> startGroups = objective.getTaskGroups().stream()
+						.map(list -> list.getFirst())
+						.collect(Collectors.toList());
+				List<PlayerTask> newTasks = new LinkedList<>();
+				startGroups.stream()
+					.map(taskGroup -> taskGroup.getTasks())
+					.forEach(tasks -> tasks.stream()
+						.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
+						.forEach(newTasks::add));
+				
+				PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
+				pQuest.performAction((_p) -> {
+					QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
+					_qp.getActiveQuests().put(raidQuest, pQuest);
+					
+					pQuest.getPlayerBossFightContainer().add(_p);
+					
+					RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+					rp.getRaidInfo().stream()
+						.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+						.findAny()
+						.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
+								() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
+					
+					if(_p.getUniqueId().equals(p.getUniqueId()))
+						_p.sendTitle("§6§lROZPOCZALES RAJD", raidQuest.getDisplay(), 5, 10, 15);
+					else
+						_p.sendTitle("§6§lROZPOCZETO RAJD", raidQuest.getDisplay(), 5, 10, 15);
+					_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
+					_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+				});
+				
+				prepareRaid(pQuest, new LinkedList<>(), new LinkedList<>());
+			}
+		}.runTask(Main.getInst());
 	}
 	
 	public void continueRaid(Player p, RaidQuest raidQuest, RaidObjective raidObjective) {
-		int objectiveId = raidQuest.getObjectives().entrySet()
-				.stream()
-				.filter(entry -> entry.getValue().equals(raidObjective))
-				.map(entry -> entry.getKey())
-				.findAny()
-				.orElse(-1);
-		if(objectiveId < 1) {
-			createNewRaid(p, raidQuest);
-			return;
-		}
-		List<RaidObjective> completedObjectives = raidQuest.getObjectives().entrySet()
-				.stream()
-				.filter(entry -> entry.getKey() < objectiveId)
-				.map(entry -> entry.getValue())
-				.collect(Collectors.toList());
-		List<String> completedGroups = completedObjectives.stream()
-				.flatMap(objective -> objective.getTaskGroups().stream())
-				.flatMap(groupList -> groupList.stream())
-				.map(group -> group.getId())
-				.collect(Collectors.toList());
-		List<String> strCompletedObjectives = completedObjectives.stream()
-				.map(objective -> objective.getId())
-				.collect(Collectors.toList());
-		
-		List<RaidGroup> startGroups = raidObjective.getTaskGroups()
-				.stream()
-				.map(groupList -> groupList.getFirst())
-				.collect(Collectors.toList());
-		List<PlayerTask> newTasks = new LinkedList<>();
-		startGroups.stream()
-			.map(taskGroup -> taskGroup.getTasks())
-			.forEach(tasks -> tasks.stream()
-				.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
-				.forEach(newTasks::add));
-		
-		PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
-		pQuest.performAction((_p) -> {
-			QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
-			_qp.getActiveQuests().put(raidQuest, pQuest);
+		new BukkitRunnable() {
 			
-			pQuest.getPlayerBossFightContainer().add(_p);
-			
-			RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
-			rp.getRaidInfo().stream()
-				.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
-				.findAny()
-				.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
-						() -> rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest)));
-			
-			if(_p.getUniqueId().equals(p.getUniqueId()))
-				_p.sendTitle("§6§lKONTYNUUJESZ RAJD", raidQuest.getDisplay(), 5, 10, 15);
-			else
-				_p.sendTitle("§6§lKONTYNUACJA RAJDU", raidQuest.getDisplay(), 5, 10, 15);
-			_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-			_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
-		});
-		
-		prepareRaid(pQuest, strCompletedObjectives, completedGroups);
+			@Override
+			public void run() {
+				int objectiveId = raidQuest.getObjectives().entrySet()
+						.stream()
+						.filter(entry -> entry.getValue().equals(raidObjective))
+						.map(entry -> entry.getKey())
+						.findAny()
+						.orElse(-1);
+				if(objectiveId < 1) {
+					createNewRaid(p, raidQuest);
+					return;
+				}
+				List<RaidObjective> completedObjectives = raidQuest.getObjectives().entrySet()
+						.stream()
+						.filter(entry -> entry.getKey() < objectiveId)
+						.map(entry -> entry.getValue())
+						.collect(Collectors.toList());
+				List<String> completedGroups = completedObjectives.stream()
+						.flatMap(objective -> objective.getTaskGroups().stream())
+						.flatMap(groupList -> groupList.stream())
+						.map(group -> group.getId())
+						.collect(Collectors.toList());
+				List<String> strCompletedObjectives = completedObjectives.stream()
+						.map(objective -> objective.getId())
+						.collect(Collectors.toList());
+				
+				List<RaidGroup> startGroups = raidObjective.getTaskGroups()
+						.stream()
+						.map(groupList -> groupList.getFirst())
+						.collect(Collectors.toList());
+				List<PlayerTask> newTasks = new LinkedList<>();
+				startGroups.stream()
+					.map(taskGroup -> taskGroup.getTasks())
+					.forEach(tasks -> tasks.stream()
+						.map(task -> new PlayerTask(p, raidQuest, task, 0, false))
+						.forEach(newTasks::add));
+				
+				PlayerRaidQuest pQuest = new PlayerRaidQuest(p, raidQuest, 1, newTasks);
+				pQuest.getCompletedObjectives().clear();
+				pQuest.getCompletedObjectives().addAll(strCompletedObjectives);
+				pQuest.getCompletedGroups().clear();
+				pQuest.getCompletedGroups().addAll(completedGroups);
+				
+				pQuest.performAction((_p) -> {
+					QuestPlayer _qp = PlayerManager.get().getQuestPlayer(_p).get();
+					_qp.getActiveQuests().put(raidQuest, pQuest);
+					
+					pQuest.getPlayerBossFightContainer().add(_p);
+					
+					RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+					rp.getRaidInfo().stream()
+						.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+						.findAny()
+						.ifPresentOrElse(raidInfo -> raidInfo.update(pQuest), 
+								() -> {
+									RaidPlayerInfo raidInfo = new RaidPlayerInfo(raidQuest);
+									raidInfo.update(pQuest);
+									rp.getRaidInfo().add(raidInfo);
+								});
+					
+					if(_p.getUniqueId().equals(p.getUniqueId()))
+						_p.sendTitle("§6§lKONTYNUUJESZ RAJD", raidQuest.getDisplay(), 5, 10, 15);
+					else
+						_p.sendTitle("§6§lKONTYNUACJA RAJDU", raidQuest.getDisplay(), 5, 10, 15);
+					_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
+					_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+				});
+				
+				prepareRaid(pQuest, strCompletedObjectives, completedGroups);
+			}
+		}.runTask(Main.getInst());
 	}
 	
 	public void prepareRaid(PlayerRaidQuest raidQuest, List<String> completedObjectives, List<String> completedGroups) {
@@ -320,7 +341,6 @@ public final class RaidManager {
 				raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eDolacz na niego przy pomocy komendy §f§o/rajd");
 				
 				raidQuest.setCanJoin(true);
-//				raidQuest.setStartTime(new Date().getTime());
 			}
 		}.runTask(Main.getInst());
 	}
@@ -467,12 +487,13 @@ public final class RaidManager {
 						.stream()
 						.map(objective -> raid.getObjectives().entrySet().stream()
 								.filter(entry -> entry.getValue().getId().equals(objective))
+								.filter(entry -> entry.getValue().getDisplay() != null)
 								.map(entry -> entry.getKey())
 								.findAny())
 						.filter(objId -> objId.isPresent())
 						.map(objId -> objId.get())
 						.collect(Collectors.toList());
-				int rows = (int) Utils.limitValue(1, 6, completedObjectives.size() - 2 / 9 + 1);
+				int rows = (int) Utils.limitValue(1, 6, (completedObjectives.size() - 2) / 9 + 1);
 				RyseInventory.builder()
 					.title("§6§lWybierz etap rajdu")
 					.rows(rows)

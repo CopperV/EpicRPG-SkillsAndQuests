@@ -115,7 +115,7 @@ public final class QuestMenuManager {
 						im.setDisplayName("§c§lDungeon§r: "+quest.getDisplay());
 					else if(pQuest instanceof PlayerRaidQuest)
 						im.setDisplayName("§6§lRajd§r: "+quest.getDisplay());
-					List<String> lore = pQuest.getQuestInfo();
+					List<String> lore = pQuest.getQuestInfo(qp.getPlayer());
 					lore.add(0, " ");
 					lore.add(0, "§eID: §7[§f"+quest.getId()+"§7]");
 					lore.add(0, "§eZlecenodawca: §r"+quest.getQuestGiver());

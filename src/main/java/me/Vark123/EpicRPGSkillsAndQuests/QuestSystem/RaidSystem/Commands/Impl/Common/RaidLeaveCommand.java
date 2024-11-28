@@ -4,6 +4,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -19,7 +20,10 @@ public class RaidLeaveCommand extends ARaidCommand {
 	}
 
 	@Override
-	public boolean canUse(Player player) {
+	public boolean canUse(CommandSender sender) {
+		if(!(sender instanceof Player))
+			return false;
+		Player player = (Player) sender;
 		if(player.getWorld().getName().toLowerCase().contains("tutorial"))
 			return false;
 		MutableBoolean returnValue = new MutableBoolean(true);
@@ -37,7 +41,10 @@ public class RaidLeaveCommand extends ARaidCommand {
 	}
 
 	@Override
-	public boolean useCommand(Player player, String... args) {
+	public boolean useCommand(CommandSender sender, String... args) {
+		if(!(sender instanceof Player))
+			return false;
+		Player player = (Player) sender;
 		QuestPlayer qp = PlayerManager.get().getQuestPlayer(player).get();
 		qp.getActiveQuests().values()
 			.stream()
@@ -72,7 +79,7 @@ public class RaidLeaveCommand extends ARaidCommand {
 	}
 
 	@Override
-	public void showCorrectUsage(Player sender) {
+	public void showCorrectUsage(CommandSender sender) {
 		sender.sendMessage("  §f§o/raid opusc §7- Zrezygnuj ze swojego udzialu w rajdzie oraz calej druzyny, jesli jestes jej liderem");
 	}
 

@@ -51,7 +51,10 @@ public final class TaskManager {
 			target = ChatColor.translateAlternateColorCodes('&', section.getString("targetName"));
 		else
 			target = "player";
-		String message = ChatColor.translateAlternateColorCodes('&', section.getString("message"));
+		
+		String message = null;
+		if(section.contains("message"))
+			message = ChatColor.translateAlternateColorCodes('&', section.getString("message"));
 		
 		ATask task;
 		String type = section.getString("type");

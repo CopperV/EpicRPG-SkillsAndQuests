@@ -54,7 +54,8 @@ public class PointsTaskListener implements Listener {
 			pTask.addProgress(EpicRPGMobManager.getInstance().getMobPoints(name, pTask.getTask().getTarget()));
 			if(pTask.getIntProgress() >= ((PointsTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 	

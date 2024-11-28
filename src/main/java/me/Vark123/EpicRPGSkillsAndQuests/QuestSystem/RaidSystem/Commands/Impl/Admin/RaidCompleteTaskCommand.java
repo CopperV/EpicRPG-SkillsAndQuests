@@ -10,10 +10,10 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidManager;
 
-public class RaidRespUnlockCommand extends AAdminRaidCommand {
+public class RaidCompleteTaskCommand extends AAdminRaidCommand {
 
-	public RaidRespUnlockCommand() {
-		super("unlock-resp", new String[] {});
+	public RaidCompleteTaskCommand() {
+		super("complete-task", new String[] {});
 	}
 
 	@Override
@@ -23,8 +23,9 @@ public class RaidRespUnlockCommand extends AAdminRaidCommand {
 
 	@Override
 	public boolean useCommand(CommandSender sender, String... args) {
-		if(args == null || args.length < 1)
+		if(args == null || args.length < 2)
 			return false;
+		String taskId = args[1];
 		Player p = Bukkit.getPlayerExact(args[0]);
 		if(p == null || !p.isOnline()) {
 			sender.sendMessage(RaidManager.get().getRaidPrefix()
@@ -38,14 +39,14 @@ public class RaidRespUnlockCommand extends AAdminRaidCommand {
 			qp.getActiveQuests().values().stream()
 				.filter(quest -> quest instanceof PlayerRaidQuest)
 				.map(quest -> (PlayerRaidQuest) quest)
-				.filter(raid -> raid.isRespFlag())
+				.flatMap(raid -> raid.getTasks().stream())
+				.filter(task -> task.getTask().getId().equals(taskId))
 				.findAny()
-				.ifPresentOrElse(raid -> {
-					raid.setRespFlag(false);
-					raid.setRespBlockerTaskGroupId(null);
+				.ifPresentOrElse(task -> {
+					task.complete();
 				}, () -> {
 					message.setValue(RaidManager.get().getRaidPrefix()
-							+" §7"+p.getName()+" §enie wykonuje zadnego rajda z odblokowanymi respami!");
+							+" §7"+p.getName()+" §enie posiada zadnego taska o ID §7"+taskId+"§e!");
 					result.setFalse();
 				});
 		}, () -> {
@@ -62,7 +63,7 @@ public class RaidRespUnlockCommand extends AAdminRaidCommand {
 	@Override
 	public void showCorrectUsage(CommandSender sender) {
 		super.showCorrectUsage(sender);
-		sender.sendMessage("  §f§o/raid unlock-resp [gracz] §7- Wylacza blokade respow");
+		sender.sendMessage("  §f§o/raid drop [gracz] [taskId] §7- Konczy taska o danym id, jesli takowy istnieje");
 	}
 
 }

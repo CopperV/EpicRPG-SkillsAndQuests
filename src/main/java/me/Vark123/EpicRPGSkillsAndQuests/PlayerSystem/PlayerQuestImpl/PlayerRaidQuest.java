@@ -92,6 +92,14 @@ public class PlayerRaidQuest extends APlayerQuest {
 		this.world = quest.getWorld()+"-"+randomizedValue;
 		this.spawners = new HashSet<>();
 		this.damageCounter = new ConcurrentHashMap<>();
+		
+		tasks.stream().forEach(task -> {
+			String id = ((RaidGroup) task.getTask().getTaskGroup()).getObjective().getId();
+			if(activeObjectives.contains(id))
+				return;
+			
+			activeObjectives.add(id);
+		});
 	}
 
 	@Override
@@ -122,6 +130,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 							.stream()
 							.filter(chainedGroup -> chainedGroup.contains(group))
 							.map(chainedGroup -> chainedGroup.getNext(group))
+							.filter(chainedGroup -> chainedGroup != null)
 							.findFirst().orElse(null);
 					
 					group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(this));
@@ -164,6 +173,14 @@ public class PlayerRaidQuest extends APlayerQuest {
 						}
 					}
 				});
+		});
+		
+		performAction(_p -> {
+			RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+				rp.getRaidInfo().stream()
+				.filter(raidInfo -> raidInfo.getRaidId().equals(quest.getId()))
+				.findAny()
+				.ifPresent(raidInfo -> raidInfo.update(this));
 		});
 		if(tasks == null || tasks.isEmpty())
 			endRaid();
@@ -214,7 +231,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 	}
 
 	@Override
-	public List<String> getQuestInfo() {
+	public List<String> getQuestInfo(Player viewer) {
 		List<String> lore = new LinkedList<>();
 		
 		List<RaidObjective> localObjectives = new LinkedList<>();
@@ -247,12 +264,33 @@ public class PlayerRaidQuest extends APlayerQuest {
 									.get().replace("%stan%", "§cNiewykonane"));
 							group.getTasks().stream()
 								.filter(localTasks::containsKey)
+								.filter(task -> task.getMessage() != null)
 								.forEach(task -> {
 									lore.add("    §4§l▶ "+task.getProgess(localTasks.get(task)));
 								});
 						});
 				});
 			});
+		
+		//FOR GameMasters
+		if(viewer.hasPermission("epicrpg.gm"))
+			localObjectives.stream()
+				.forEach(objective -> {
+					lore.add("§4§l▶ §e"+objective.getId());
+					objective.getTaskGroups().stream().forEach(groups -> {
+						groups.stream()
+							.filter(localGroups::contains)
+							.forEach(group -> {
+								lore.add("  §4§l▶ §e"+group.getId());
+								group.getTasks().stream()
+									.filter(localTasks::containsKey)
+									.filter(task -> task.getMessage() != null)
+									.forEach(task -> {
+										lore.add("    §4§l▶ "+task.getId());
+									});
+							});
+					});
+				});
 		return lore;
 	}
 	
@@ -285,6 +323,8 @@ public class PlayerRaidQuest extends APlayerQuest {
 				.forEach(newTasks::add));
 		tasks.addAll(newTasks);
 
+		if(!activeObjectives.contains(objective.getId()))
+			activeObjectives.add(objective.getId());
 		performAction(_p -> {
 			_p.sendTitle("§a§lAKTUALIZACJA", quest.getDisplay(), 5, 10, 15);
 			_p.playSound(_p, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
@@ -293,6 +333,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 	}
 	
 	public void endObjective(RaidObjective objective) {
+		activeObjectives.remove(objective.getId());
 		completedObjectives.add(objective.getId());
 		if(objective.getEvents().containsKey(ERaidEventType.END))
 			objective.getEvents().get(ERaidEventType.END)
@@ -332,110 +373,116 @@ public class PlayerRaidQuest extends APlayerQuest {
 	public void wipeRaid() {
 		if(!respFlag)
 			return;
-		
-		RaidGroup group = tasks.stream()
-				.map(task -> (RaidGroup) task.getTask().getTaskGroup())
-				.filter(_group -> _group.getId().equals(respBlockerTaskGroupId))
-				.findFirst()
-				.orElse(null);
-		if(group == null || group.getCheckpoint() == null) {
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eNie mozna cofnac rajdu do punktu kontrolnego!");
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eZglos to administratorowi!");
-			return;
-		}
-		
-		RaidCheckpoint checkpoint = group.getCheckpoint();
-		RaidGroup targetGroup = group.getObjective().getRaidQuest().getObjectives()
-				.values().stream()
-				.flatMap(objective -> objective.getTaskGroups().stream())
-				.flatMap(groupsList -> groupsList.stream())
-				.filter(_group -> _group.getId().equals(checkpoint.getTargetGroup()))
-				.findAny()
-				.orElse(null);
-		if(targetGroup == null) {
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eNie mozna cofnac rajdu do punktu kontrolnego!");
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eZglos to administratorowi!");
-			return;
-		}
-		
-		RaidObjective targetObjective = targetGroup.getObjective();
-		RaidQuest raidQuest = targetObjective.getRaidQuest();
-		int objectiveId = raidQuest.getObjectives().entrySet()
-				.stream()
-				.filter(entry -> entry.getValue().equals(targetObjective))
-				.map(entry -> entry.getKey())
-				.findAny()
-				.orElse(-1);
-		if(objectiveId < 0) {
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eNie mozna cofnac rajdu do punktu kontrolnego!");
-			player.sendMessage(RaidManager.get().getRaidPrefix()+
-					" §eZglos to administratorowi!");
-			return;
-		}
-		
-		PlayerRaidQuest pRaidQuest = this;
-		respBlockerTaskGroupId = null;
-		canJoin = false;
+
+		PlayerRaidQuest pQuest = this;
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				List<RaidObjective> objectivesToUndo = raidQuest.getObjectives().entrySet()
-						.stream()
-						.filter(entry -> entry.getKey() > objectiveId)
-						.map(entry -> entry.getValue())
-						.collect(Collectors.toList());
-				List<String> groupsToUndo = objectivesToUndo
-						.stream()
+				RaidGroup group = tasks.stream()
+						.map(task -> (RaidGroup) task.getTask().getTaskGroup())
+						.filter(_group -> _group.getId().equals(respBlockerTaskGroupId))
+						.findFirst()
+						.orElse(null);
+				if(group == null || group.getCheckpoint() == null) {
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eNie mozna cofnac rajdu do punktu kontrolnego!");
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eZglos to administratorowi!");
+					return;
+				}
+
+				RaidCheckpoint checkpoint = group.getCheckpoint();
+				RaidGroup targetGroup = group.getObjective().getRaidQuest().getObjectives()
+						.values().stream()
 						.flatMap(objective -> objective.getTaskGroups().stream())
 						.flatMap(groupsList -> groupsList.stream())
-						.map(group -> group.getId())
-						.collect(Collectors.toList());
-				ChainLinkedList<RaidGroup> groupList = targetObjective.getTaskGroups()
-						.stream()
-						.filter(_groupList -> _groupList.contains(targetGroup))
+						.filter(_group -> _group.getId().equals(checkpoint.getTargetGroup()))
 						.findAny()
 						.orElse(null);
-				if(groupList != null) {
-					RaidGroup tmp = groupList.getNext(targetGroup);
-					while(tmp != null) {
-						groupsToUndo.add(tmp.getId());
-						tmp = groupList.getNext(targetGroup);
-					}
+				if(targetGroup == null) {
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eNie mozna cofnac rajdu do punktu kontrolnego!");
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eZglos to administratorowi!");
+					return;
 				}
-				List<PlayerTask> tasksToUndo = tasks.stream()
-						.filter(task -> groupsToUndo.contains(((RaidGroup) task.getTask().getTaskGroup()).getId()))
-						.collect(Collectors.toList());
-				
-				tasks.removeAll(tasksToUndo);
-				completedGroups.removeAll(groupsToUndo);
-				
-				List<String> strObjectivesToUndo = objectivesToUndo.stream()
-						.map(obj -> obj.getId())
-						.collect(Collectors.toList());
-				completedObjectives.removeAll(strObjectivesToUndo);
-				activeObjectives.removeAll(strObjectivesToUndo);
-				
-				checkpoint.getCommands()
-					.stream()
-					.map(cmd -> cmd.replace("[RAID_WORLD]", world))
-					.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
-				
-				performAction(_p -> {
-					RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
-					rp.getRaidInfo().stream()
-						.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+
+				RaidObjective targetObjective = targetGroup.getObjective();
+				RaidQuest raidQuest = targetObjective.getRaidQuest();
+				int objectiveId = raidQuest.getObjectives().entrySet()
+						.stream()
+						.filter(entry -> entry.getValue().equals(targetObjective))
+						.map(entry -> entry.getKey())
 						.findAny()
-						.ifPresent(raidInfo -> raidInfo.update(pRaidQuest));
-					_p.sendMessage(RaidManager.get().getRaidPrefix()+
-							" §eRajd zostal cofniety do punktu kontrolnego!");
-				});
+						.orElse(-1);
+				if(objectiveId < 0) {
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eNie mozna cofnac rajdu do punktu kontrolnego!");
+					player.sendMessage(RaidManager.get().getRaidPrefix()+
+							" §eZglos to administratorowi!");
+					return;
+				}
 				
-				canJoin = true;
+				respFlag = false;
+				respBlockerTaskGroupId = null;
+				canJoin = false;
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						List<RaidObjective> objectivesToUndo = raidQuest.getObjectives().entrySet()
+								.stream()
+								.filter(entry -> entry.getKey() > objectiveId)
+								.map(entry -> entry.getValue())
+								.collect(Collectors.toList());
+						List<String> groupsToUndo = objectivesToUndo
+								.stream()
+								.flatMap(objective -> objective.getTaskGroups().stream())
+								.flatMap(groupsList -> groupsList.stream())
+								.map(group -> group.getId())
+								.collect(Collectors.toList());
+						ChainLinkedList<RaidGroup> groupList = targetObjective.getTaskGroups()
+								.stream()
+								.filter(_groupList -> _groupList.contains(targetGroup))
+								.findAny()
+								.orElse(null);
+						if(groupList != null) {
+							RaidGroup tmp = groupList.getNext(targetGroup);
+							while(tmp != null) {
+								groupsToUndo.add(tmp.getId());
+								tmp = groupList.getNext(tmp);
+							}
+						}
+						List<PlayerTask> tasksToUndo = tasks.stream()
+								.filter(task -> groupsToUndo.contains(((RaidGroup) task.getTask().getTaskGroup()).getId()))
+								.collect(Collectors.toList());
+						
+						tasks.removeAll(tasksToUndo);
+						completedGroups.removeAll(groupsToUndo);
+						
+						List<String> strObjectivesToUndo = objectivesToUndo.stream()
+								.map(obj -> obj.getId())
+								.collect(Collectors.toList());
+						completedObjectives.removeAll(strObjectivesToUndo);
+						activeObjectives.removeAll(strObjectivesToUndo);
+						
+						checkpoint.getCommands()
+							.stream()
+							.map(cmd -> cmd.replace("[RAID_WORLD]", world))
+							.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
+
+						performAction(_p -> {
+							RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+							rp.getRaidInfo().stream()
+								.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+								.findAny()
+								.ifPresent(raidInfo -> raidInfo.update(pQuest));
+							_p.sendMessage(RaidManager.get().getRaidPrefix()+
+									" §eRajd zostal cofniety do punktu kontrolnego!");
+						});
+
+						canJoin = true;
+					}
+				}.runTask(Main.getInst());
 			}
 		}.runTask(Main.getInst());
 	}
@@ -549,7 +596,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 		RaidQuest raid = (RaidQuest) quest;
 		if(!raid.getDropTables().containsKey(mobId))
 			return;
-		
+
 		defeatedBosses.add(mobId);
 		Random rand = new Random();
 		List<IRaidDropTable> dropTable = raid.getDropTables().get(mobId);
@@ -564,7 +611,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 						MutableBoolean guarantableFlag = new MutableBoolean(
 								!raidInfo.getDropped().contains(mobId) && raidInfo.getGuaranteedDrops().contains(mobId));
 						dropTable.stream()
-							.filter(drop -> raidInfo.getDropped().contains(mobId) && drop.isLimited())
+							.filter(drop -> !raidInfo.getDropped().contains(mobId) || !drop.isLimited())
 							.filter(drop -> drop.getChance() >= rand.nextDouble())
 							.forEach(drop -> {
 								personalizedDropTable.add(drop);
@@ -583,6 +630,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 						}
 						if(!raidInfo.getDropped().contains(mobId))
 							raidInfo.getDropped().add(mobId);
+						
 						personalizedDropTable.forEach(drop -> drop.dropToPlayer(rp.getPlayer()));
 					});
 			});

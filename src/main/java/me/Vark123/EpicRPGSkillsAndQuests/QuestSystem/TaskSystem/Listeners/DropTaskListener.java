@@ -43,7 +43,8 @@ public class DropTaskListener implements Listener {
 			pTask.addProgress(drops.get(pTask.getTask().getTarget()));
 			if(pTask.getIntProgress() >= ((DropTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 }

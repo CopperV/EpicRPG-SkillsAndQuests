@@ -39,7 +39,7 @@ public abstract class APlayerQuest {
 		return quest.getTaskGroups().get(stage);
 	}
 	
-	public List<String> getQuestInfo() {
+	public List<String> getQuestInfo(Player viewer) {
 		List<String> lore = tasks.stream()
 				.map(pTask -> pTask.getProgress())
 				.collect(Collectors.toList());

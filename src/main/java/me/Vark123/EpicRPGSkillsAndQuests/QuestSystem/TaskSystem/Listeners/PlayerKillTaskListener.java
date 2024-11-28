@@ -36,6 +36,8 @@ public class PlayerKillTaskListener implements Listener {
 			return;
 		
 		Player killer = (Player) _killer;
+		if(victim.equals(killer))
+			return;
 		
 		RpgPlayer rpg = me.Vark123.EpicRPG.Players.PlayerManager
 				.getInstance()
@@ -55,7 +57,8 @@ public class PlayerKillTaskListener implements Listener {
 			pTask.addProgress(1);
 			if(pTask.getIntProgress() >= ((PlayerKillTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 	

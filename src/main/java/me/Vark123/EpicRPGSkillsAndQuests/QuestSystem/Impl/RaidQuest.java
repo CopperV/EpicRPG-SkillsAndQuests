@@ -41,8 +41,10 @@ public class RaidQuest extends AQuest {
 	
 	public RaidQuest(ConfigurationSection questSection) {
 		super(questSection);
+
+		this.world = questSection.getString("world");
+		this.defeated = questSection.getBoolean("defeat");
 		
-		this.id = questSection.getString("id");
 		this.display = ChatColor.translateAlternateColorCodes('&', questSection.getString("name"));
 		this.questGiver = ChatColor.translateAlternateColorCodes('&', questSection.getString("zleceniodawca"));
 		this.lore = questSection.getStringList("lore")
@@ -118,7 +120,7 @@ public class RaidQuest extends AQuest {
 			.map(objectiveSection::getConfigurationSection)
 			.forEach(section -> {
 				int stage = Integer.parseInt(section.getName());
-				RaidObjective objective = new RaidObjective(objectiveSection, raidQuest);
+				RaidObjective objective = new RaidObjective(section, raidQuest);
 				objectives.put(stage, objective);
 			});
 	}

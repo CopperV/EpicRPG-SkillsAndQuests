@@ -25,7 +25,7 @@ public class RaidDamageListener implements Listener {
 		if(!(damager instanceof Player))
 			return;
 		
-		if(!(damager.getWorld().getName().toLowerCase().contains("dungeon")))
+		if(!(damager.getWorld().getName().toLowerCase().contains("raid")))
 			return;
 		
 		Player p = (Player) damager;

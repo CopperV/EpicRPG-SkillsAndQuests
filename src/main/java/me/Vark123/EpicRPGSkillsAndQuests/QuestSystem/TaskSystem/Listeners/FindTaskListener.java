@@ -57,7 +57,8 @@ public class FindTaskListener implements Listener {
 		});
 		tasksToComplete.getValue().forEach(pTask -> {
 			pTask.complete();
-			p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 
 	}

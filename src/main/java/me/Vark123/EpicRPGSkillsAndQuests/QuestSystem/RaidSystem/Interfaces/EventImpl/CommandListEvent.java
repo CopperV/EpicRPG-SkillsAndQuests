@@ -26,7 +26,7 @@ public class CommandListEvent implements IRaidEvent {
 	public void doAction(Player p, PlayerRaidQuest pQuest, Object... args) {
 		String w = pQuest.getWorld();
 		commands.stream()
-			.map(cmd -> PlaceholderAPI.setPlaceholders(p, w))
+			.map(cmd -> PlaceholderAPI.setPlaceholders(p, cmd))
 			.map(cmd -> cmd.replace("[RAID_WORLD]", w))
 			.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
 	}

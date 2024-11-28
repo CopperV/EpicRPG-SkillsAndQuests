@@ -3,6 +3,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.A
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -17,12 +18,12 @@ public class RaidDropTableCommand extends AAdminRaidCommand {
 	}
 
 	@Override
-	public boolean canUse(Player player) {
-		return super.canUse(player);
+	public boolean canUse(CommandSender sender) {
+		return super.canUse(sender);
 	}
 
 	@Override
-	public boolean useCommand(Player sender, String... args) {
+	public boolean useCommand(CommandSender sender, String... args) {
 		if(args == null || args.length < 2)
 			return false;
 		String dropId = args[0];
@@ -61,7 +62,7 @@ public class RaidDropTableCommand extends AAdminRaidCommand {
 	}
 
 	@Override
-	public void showCorrectUsage(Player sender) {
+	public void showCorrectUsage(CommandSender sender) {
 		super.showCorrectUsage(sender);
 		sender.sendMessage("  §f§o/raid drop [dropId] [gracz] §7- Dropi nagrody z DropTable dla graczy wewnatrz kontenera");
 	}

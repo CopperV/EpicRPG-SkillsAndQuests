@@ -52,7 +52,8 @@ public class KillTaskListener implements Listener {
 			pTask.addProgress(1);
 			if(pTask.getIntProgress() >= ((KillTask)pTask.getTask()).getAmount())
 				pTask.complete();
-			killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				killer.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 	

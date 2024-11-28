@@ -9,10 +9,8 @@ import me.Vark123.EpicParty.PlayerPartySystem.PartyPlayer;
 import me.Vark123.EpicParty.PlayerPartySystem.Events.PartyJoinEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer.RaidPlayerInfo;
 
 public class RaidPartyJoinListener implements Listener {
 
@@ -44,14 +42,14 @@ public class RaidPartyJoinListener implements Listener {
 				.ifPresent(raid -> {
 					PlayerManager.get().getQuestPlayer(member.getPlayer())
 						.ifPresent(qp2 -> {
-							qp2.getActiveQuests().put(raid.getQuest(), raid);
-							
 							RaidPlayer rp = RaidManager.get().getRaidPlayer(member.getPlayer());
 							rp.getRaidInfo().stream()
 								.filter(raidInfo -> raidInfo.getRaidId().equals(raid.getQuest().getId()))
 								.findAny()
-								.ifPresentOrElse(raidInfo -> raidInfo.update(raid), 
-										() -> rp.getRaidInfo().add(new RaidPlayerInfo((RaidQuest) raid.getQuest())));
+								.ifPresent(raidInfo -> {
+									qp2.getActiveQuests().put(raid.getQuest(), raid);
+									raidInfo.update(raid);
+								});
 						});
 				});
 		});

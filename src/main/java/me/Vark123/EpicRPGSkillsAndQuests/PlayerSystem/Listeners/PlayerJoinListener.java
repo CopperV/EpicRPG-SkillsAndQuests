@@ -9,6 +9,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
 
 public class PlayerJoinListener implements Listener {
 
@@ -18,6 +19,8 @@ public class PlayerJoinListener implements Listener {
 		QuestPlayer qp = PlayerManager.get().loadQuestPlayer(p);
 		PlayerManager.get().registerPlayer(qp);
 		qp.getActiveQuests().forEach((quest, pQuest) -> {
+			if(quest instanceof RaidQuest)
+				return;
 			TaskGroup group = quest.getTaskGroups().get(pQuest.getStage());
 			group.getEventsByType(EventCall.JOIN).ifPresent(event -> event.executeEvent(pQuest));
 		});

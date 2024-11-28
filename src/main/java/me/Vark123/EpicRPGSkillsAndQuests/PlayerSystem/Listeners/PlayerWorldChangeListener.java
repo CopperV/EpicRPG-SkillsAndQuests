@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskGroup;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
 
 public class PlayerWorldChangeListener implements Listener {
 
@@ -16,6 +17,8 @@ public class PlayerWorldChangeListener implements Listener {
 		Player p = e.getPlayer();
 		PlayerManager.get().getQuestPlayer(p).ifPresent(qp -> {
 			qp.getActiveQuests().forEach((quest, pQuest) -> {
+				if(quest instanceof RaidQuest)
+					return;
 				TaskGroup group = quest.getTaskGroups().get(pQuest.getStage());
 				group.getEventsByType(EventCall.WORLD_CHANGE).ifPresent(event -> event.executeEvent(pQuest));
 			});

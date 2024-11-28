@@ -1,7 +1,6 @@
 package me.Vark123.EpicRPGSkillsAndQuests.ItemSystem.BaseItems.Impl.Quests;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -54,10 +53,17 @@ public class RaidQuestItem extends QuestItem {
 				.findAny()
 				.ifPresent(pQuest -> it.setType(Material.RED_TERRACOTTA));
 		});
-		RaidManager.get().getRaidPlayer(p).getRaidInfo().stream()
-			.filter(info -> info.getRaidId().equals(quest.getId()))
-			.findAny()
-			.ifPresent(info -> it.setType(Material.ORANGE_TERRACOTTA));
+		
+		if(it.getType().equals(Material.GREEN_TERRACOTTA)) {
+			me.Vark123.EpicParty.PlayerPartySystem.PlayerManager.get().getPartyPlayer(p).ifPresent(pp -> {
+				if(pp.getParty().isEmpty() || pp.getParty().get().getLeader().equals(pp)) {
+					RaidManager.get().getRaidPlayer(p).getRaidInfo().stream()
+					.filter(info -> info.getRaidId().equals(quest.getId()))
+					.findAny()
+					.ifPresent(info -> it.setType(Material.ORANGE_TERRACOTTA));
+				}
+			});
+		}
 		
 		ItemMeta im = it.getItemMeta();
 		switch(it.getType()) {
@@ -74,9 +80,7 @@ public class RaidQuestItem extends QuestItem {
 			case YELLOW_TERRACOTTA:
 				QuestPlayer qp = PlayerManager.get().getQuestPlayer(p).get();
 				APlayerQuest pQuest = qp.getActiveQuests().get(quest);
-				List<String> newLore = pQuest.getTasks().stream()
-						.map(pTask -> pTask.getProgress())
-						.collect(Collectors.toList());
+				List<String> newLore = pQuest.getQuestInfo(p);
 				TaskGroup taskGroup = quest.getTaskGroups().get(pQuest.getStage() + 1);
 				if(taskGroup != null && !taskGroup.getRequirements().isEmpty()) {
 					newLore.add(" ");
@@ -122,6 +126,15 @@ public class RaidQuestItem extends QuestItem {
 							.get().getPartyPlayer(p).get();
 					if(pp.getParty().isEmpty() ||
 							(pp.getParty().isPresent() && pp.getParty().get().getLeader().equals(pp))) {
+						
+						RaidPlayer rp = RaidManager.get().getRaidPlayer(p);
+						rp.getRaidInfo().stream()
+							.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+							.findAny()
+							.ifPresentOrElse(raidInfo -> { }, () -> {
+								rp.getRaidInfo().add(new RaidPlayerInfo(raidQuest));
+							});
+						
 						RaidManager.get().createNewRaid(p, raidQuest);
 					} else {
 						if (PlayerManager.get().getQuestPlayer(pp.getParty().get().getLeader().getPlayer()).get()
@@ -137,6 +150,19 @@ public class RaidQuestItem extends QuestItem {
 								.values().stream()
 								.filter(quest -> quest instanceof PlayerRaidQuest)
 								.findAny().get();
+						
+						RaidPlayer _rp = RaidManager.get().getRaidPlayer(p);
+						_rp.getRaidInfo().stream()
+							.filter(raidInfo -> raidInfo.getRaidId().equals(raidQuest.getId()))
+							.findAny()
+							.ifPresentOrElse(raidInfo -> {
+								raidInfo.update(pQuest);
+							}, () -> {
+								RaidPlayerInfo raidInfo = new RaidPlayerInfo(raidQuest);
+								raidInfo.update(pQuest);
+								_rp.getRaidInfo().add(raidInfo);
+							});
+						
 						
 						qp.getActiveQuests().put(pQuest.getQuest(), pQuest);
 						pQuest.performAction(_p -> {

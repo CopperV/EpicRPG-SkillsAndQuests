@@ -2,6 +2,7 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.C
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -16,7 +17,10 @@ public class RaidWipeCommand extends ARaidCommand {
 	}
 
 	@Override
-	public boolean canUse(Player player) {
+	public boolean canUse(CommandSender sender) {
+		if(!(sender instanceof Player))
+			return false;
+		Player player = (Player) sender;
 		if(player.getWorld().getName().toLowerCase().contains("tutorial"))
 			return false;
 		MutableBoolean returnValue = new MutableBoolean(true);
@@ -41,7 +45,10 @@ public class RaidWipeCommand extends ARaidCommand {
 	}
 
 	@Override
-	public boolean useCommand(Player player, String... args) {
+	public boolean useCommand(CommandSender sender, String... args) {
+		if(!(sender instanceof Player))
+			return false;
+		Player player = (Player) sender;
 		QuestPlayer qp = PlayerManager.get().getQuestPlayer(player).get();
 		qp.getActiveQuests().values()
 			.stream()
@@ -52,7 +59,7 @@ public class RaidWipeCommand extends ARaidCommand {
 	}
 
 	@Override
-	public void showCorrectUsage(Player sender) {
+	public void showCorrectUsage(CommandSender sender) {
 		sender.sendMessage("  §f§o/raid wipe §7- Cofnij rajd do ostatniego punktu kontrolnego");
 	}
 

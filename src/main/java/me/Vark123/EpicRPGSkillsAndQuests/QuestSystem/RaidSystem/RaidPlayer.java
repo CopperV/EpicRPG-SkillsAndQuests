@@ -72,6 +72,7 @@ public class RaidPlayer {
 			this.completedObjectives.clear();
 			this.completedGroups.clear();
 			this.completedObjectives.addAll(raidQuest.getCompletedObjectives());
+			this.completedObjectives.addAll(raidQuest.getActiveObjectives());
 			this.completedGroups.addAll(raidQuest.getCompletedGroups());
 		}
 		

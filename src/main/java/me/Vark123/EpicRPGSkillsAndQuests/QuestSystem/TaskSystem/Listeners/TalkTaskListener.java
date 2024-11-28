@@ -44,7 +44,8 @@ public class TalkTaskListener implements Listener {
 				p.sendMessage("§4§l» §r"+msg);
 			});
 			pTask.complete();
-			p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+			if(pTask.getTask().getMessage() != null)
+				p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 		});
 	}
 	

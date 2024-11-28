@@ -53,7 +53,8 @@ public class GiveTaskListener implements Listener {
 		pTask.addProgress(giveAmount);
 		if(pTask.getIntProgress() >= ((GiveTask)pTask.getTask()).getAmount())
 			pTask.complete();
-		p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
+		if(pTask.getTask().getMessage() != null)
+			p.sendMessage(Main.getInstance().getPrefix()+" §r"+pTask.getProgress());
 	}
 	
 }
