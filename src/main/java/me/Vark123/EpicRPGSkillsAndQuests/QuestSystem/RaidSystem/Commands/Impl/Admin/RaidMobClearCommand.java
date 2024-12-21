@@ -2,16 +2,13 @@ package me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Commands.Impl.A
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import io.lumine.mythic.bukkit.MythicBukkit;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidManager;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidMobManager;
 
 public class RaidMobClearCommand extends AAdminRaidCommand {
 
@@ -34,21 +31,16 @@ public class RaidMobClearCommand extends AAdminRaidCommand {
 					+" §eSwiat §7"+args[0]+" §enie istnieje!");
 			return false;
 		}
-		
-		MutableObject<String> message = new MutableObject<>("");
-		MutableBoolean result = new MutableBoolean(true);
-//		String[] mobs = args[1].split(",");
+
 		List<String> mobs = Arrays.asList(args[1].split(","));
-		w.getEntities().stream()
-			.filter(e -> MythicBukkit.inst().getMobManager().isActiveMob(e.getUniqueId()))
-			.map(e -> MythicBukkit.inst().getMobManager().getActiveMob(e.getUniqueId()).get())
-			.filter(mob -> mobs.contains(mob.getMobType()))
-			.collect(Collectors.toList())
-			.forEach(mob -> mob.remove());
-		
-		if(result.isFalse())
-			sender.sendMessage(message.getValue());
-		return result.booleanValue();
+		RaidMobManager.get().getStoredMob().keySet().stream()
+			.filter(aMob -> aMob.getSpawnLocation().getWorld().getName().equals(w.getName()))
+			.filter(aMob -> mobs.contains(aMob.getMobType()))
+			.forEach(aMob -> {
+				RaidMobManager.get().getCleanerMob().put(aMob, w.getName());
+			});
+				
+		return true;
 	}
 
 	@Override

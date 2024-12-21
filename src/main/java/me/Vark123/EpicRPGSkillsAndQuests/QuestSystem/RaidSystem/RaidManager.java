@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -51,7 +52,9 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerTask;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.QuestPlayer;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaidQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IRaidEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer.RaidPlayerInfo;
 
 @Getter
@@ -299,48 +302,80 @@ public final class RaidManager {
 							activeGroups.add(group);
 					});
 				
+				Queue<Object> events = new LinkedList<>();
+				
 				_completedObjectives.stream()
 					.forEachOrdered(objective -> {
 						if(objective.getEvents().containsKey(ERaidEventType.START))
 							objective.getEvents().get(ERaidEventType.START)
-								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+//								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+								.forEach(events::add);
 						
 						_completedGroups.stream()
 							.filter(group -> group.getObjective().equals(objective))
 							.forEach(group -> {
-								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
-								group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(raidQuest));
-								group.getEventsByType(EventCall.COMPLETE).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.COMPLETE).ifPresent(event -> event.executeEvent(raidQuest));
+								group.getEventsByType(EventCall.START).ifPresent(events::add);
+								group.getEventsByType(EventCall.END).ifPresent(events::add);
+								group.getEventsByType(EventCall.COMPLETE).ifPresent(events::add);
 							});
 						
 						if(objective.getEvents().containsKey(ERaidEventType.END))
 							objective.getEvents().get(ERaidEventType.END)
-								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+//								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+								.forEach(events::add);
 					});
 				activeObjectives.stream()
 					.forEachOrdered(objective -> {
 						if(objective.getEvents().containsKey(ERaidEventType.START))
 							objective.getEvents().get(ERaidEventType.START)
-								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+//								.forEach(event -> event.doAction(raidQuest.getPlayer(), raidQuest));
+								.forEach(events::add);
 						
 						_completedGroups.stream()
 							.filter(group -> group.getObjective().equals(objective))
 							.forEach(group -> {
-								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
-								group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(raidQuest));
-								group.getEventsByType(EventCall.COMPLETE).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.COMPLETE).ifPresent(event -> event.executeEvent(raidQuest));
+								group.getEventsByType(EventCall.START).ifPresent(events::add);
+								group.getEventsByType(EventCall.END).ifPresent(events::add);
+								group.getEventsByType(EventCall.COMPLETE).ifPresent(events::add);
 							});
 						activeGroups.stream()
 							.filter(group -> group.getObjective().equals(objective))
 							.forEach(group -> {
-								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
+//								group.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(raidQuest));
+								group.getEventsByType(EventCall.START).ifPresent(events::add);
 							});
 					});
 				
-				raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eRajd zostal stworzony");
-				raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eDolacz na niego przy pomocy komendy §f§o/rajd");
-				
-				raidQuest.setCanJoin(true);
+				new BukkitRunnable() {
+					int COMMANDS_PER_TICK = 5;
+					@Override
+					public void run() {
+						int count = 0;
+						while(!events.isEmpty() && count < COMMANDS_PER_TICK) {
+							++count;
+							Object object = events.poll();
+							if(object instanceof IRaidEvent) {
+								((IRaidEvent) object).doAction(raidQuest.getPlayer(), raidQuest);
+							} else if(object instanceof QuestEvent) {
+								((QuestEvent) object).executeEvent(raidQuest);
+							}
+						}
+						
+						if(events.isEmpty()) {
+							cancel();
+							raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eRajd zostal stworzony");
+							raidQuest.sendMessage(EpicRPGSkillsAndQuestsAPI.get().getPrefix()+" §eDolacz na niego przy pomocy komendy §f§o/rajd");
+							raidQuest.setCanJoin(true);
+							return;
+						}
+					}
+				}.runTaskTimer(Main.getInst(), 0, 1);
 			}
 		}.runTask(Main.getInst());
 	}
@@ -426,7 +461,8 @@ public final class RaidManager {
 						List<String> dropped = section.getStringList("dropped");
 						List<String> completedObjectives = section.getStringList("completed.objectives");
 						List<String> completedGroups = section.getStringList("completed.groups");
-						raidInfos.add(new RaidPlayerInfo(raidId, guaranteedDrops, dropped, completedObjectives, completedGroups));
+						List<String> unlockedCheckpoints = section.getStringList("completed.checkpoints");
+						raidInfos.add(new RaidPlayerInfo(raidId, guaranteedDrops, dropped, completedObjectives, completedGroups, unlockedCheckpoints));
 					});
 			}
 			raidPlayer = new RaidPlayer(player, raidInfos);
@@ -462,6 +498,8 @@ public final class RaidManager {
 					raidInfo.getCompletedObjectives());
 			fYml.set(uid+".raids."+raidInfo.getRaidId()+".completed.groups", 
 					raidInfo.getCompletedGroups());
+			fYml.set(uid+".raids."+raidInfo.getRaidId()+".completed.checkpoints", 
+					raidInfo.getUnlockedCheckpoints());
 		});
 		
 		try {
@@ -483,7 +521,7 @@ public final class RaidManager {
 			.filter(raidInfo -> raidInfo.getRaidId().equals(raid.getId()))
 			.findAny()
 			.ifPresentOrElse(raidInfo -> {
-				List<Integer> completedObjectives = raidInfo.getCompletedObjectives()
+				List<Integer> completedObjectives = raidInfo.getUnlockedCheckpoints()
 						.stream()
 						.map(objective -> raid.getObjectives().entrySet().stream()
 								.filter(entry -> entry.getValue().getId().equals(objective))

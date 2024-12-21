@@ -37,6 +37,7 @@ public class RaidPlayer {
 		private List<String> dropped;
 		private List<String> completedObjectives;
 		private List<String> completedGroups;
+		private List<String> unlockedCheckpoints;
 		
 		public RaidPlayerInfo(RaidQuest quest) {
 			this.raidId = quest.getId();
@@ -56,16 +57,18 @@ public class RaidPlayer {
 			this.dropped = new LinkedList<>();
 			this.completedObjectives = new LinkedList<>();
 			this.completedGroups = new LinkedList<>();
+			this.unlockedCheckpoints = new LinkedList<>();
 		}
 
 		public RaidPlayerInfo(String raidId, List<String> guaranteedDrops, List<String> dropped,
-				List<String> completedObjectives, List<String> completedGroups) {
+				List<String> completedObjectives, List<String> completedGroups, List<String> unlockedCheckpoints) {
 			super();
 			this.raidId = raidId;
 			this.guaranteedDrops = guaranteedDrops;
 			this.dropped = dropped;
 			this.completedObjectives = completedObjectives;
 			this.completedGroups = completedGroups;
+			this.unlockedCheckpoints = unlockedCheckpoints;
 		}
 		
 		public void update(PlayerRaidQuest raidQuest) {
@@ -74,6 +77,13 @@ public class RaidPlayer {
 			this.completedObjectives.addAll(raidQuest.getCompletedObjectives());
 			this.completedObjectives.addAll(raidQuest.getActiveObjectives());
 			this.completedGroups.addAll(raidQuest.getCompletedGroups());
+		}
+		
+		public void unlockCheckpoint(String checkpoint) {
+			if(unlockedCheckpoints.contains(checkpoint))
+				return;
+			
+			unlockedCheckpoints.add(checkpoint);
 		}
 		
 	}

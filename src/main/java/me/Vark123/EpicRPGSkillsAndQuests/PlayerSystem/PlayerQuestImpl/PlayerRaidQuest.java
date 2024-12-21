@@ -133,6 +133,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 							.filter(chainedGroup -> chainedGroup != null)
 							.findFirst().orElse(null);
 					
+					
 					group.getEventsByType(EventCall.END).ifPresent(event -> event.executeEvent(this));
 					group.getEventsByType(EventCall.COMPLETE).ifPresent(event -> event.executeEvent(this));
 					
@@ -284,9 +285,8 @@ public class PlayerRaidQuest extends APlayerQuest {
 								lore.add("  §4§l▶ §e"+group.getId());
 								group.getTasks().stream()
 									.filter(localTasks::containsKey)
-									.filter(task -> task.getMessage() != null)
 									.forEach(task -> {
-										lore.add("    §4§l▶ "+task.getId());
+										lore.add("    §4§l▶ §e"+task.getId()+": §7"+localTasks.get(task).isCompleted());
 									});
 							});
 					});
@@ -330,6 +330,17 @@ public class PlayerRaidQuest extends APlayerQuest {
 			_p.playSound(_p, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
 			_p.spawnParticle(Particle.VILLAGER_HAPPY, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 		});
+		
+		if(objective.getDisplay() != null) {
+			performAction(_p -> {
+				RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);
+					rp.getRaidInfo().stream()
+					.filter(raidInfo -> raidInfo.getRaidId().equals(quest.getId()))
+					.findAny()
+					.ifPresent(raidInfo -> raidInfo.unlockCheckpoint(objective.getId()));
+				
+			});
+		}
 	}
 	
 	public void endObjective(RaidObjective objective) {
@@ -446,7 +457,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 								.findAny()
 								.orElse(null);
 						if(groupList != null) {
-							RaidGroup tmp = groupList.getNext(targetGroup);
+							RaidGroup tmp = targetGroup.getObjective().equals(group.getObjective()) ? targetGroup : groupList.get(0);
 							while(tmp != null) {
 								groupsToUndo.add(tmp.getId());
 								tmp = groupList.getNext(tmp);
@@ -469,6 +480,11 @@ public class PlayerRaidQuest extends APlayerQuest {
 							.stream()
 							.map(cmd -> cmd.replace("[RAID_WORLD]", world))
 							.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
+
+						targetGroup.getEventsByType(EventCall.START).ifPresent(event -> event.executeEvent(pQuest));
+						targetGroup.getTasks().stream()
+							.map(task -> new PlayerTask(player, raidQuest, task, 0, false))
+							.forEach(tasks::add);
 
 						performAction(_p -> {
 							RaidPlayer rp = RaidManager.get().getRaidPlayer(_p);

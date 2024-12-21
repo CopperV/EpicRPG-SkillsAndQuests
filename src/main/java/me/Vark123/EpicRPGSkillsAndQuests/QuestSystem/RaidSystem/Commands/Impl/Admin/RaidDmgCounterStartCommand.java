@@ -41,6 +41,7 @@ public class RaidDmgCounterStartCommand extends AAdminRaidCommand {
 				.filter(raid -> !raid.isDamageFlag())
 				.findAny()
 				.ifPresentOrElse(raid -> {
+					raid.getDamageCounter().clear();
 					raid.setDamageFlag(true);
 				}, () -> {
 					message.setValue(RaidManager.get().getRaidPrefix()

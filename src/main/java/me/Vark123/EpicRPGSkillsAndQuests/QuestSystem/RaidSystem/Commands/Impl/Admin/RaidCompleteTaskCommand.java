@@ -63,7 +63,7 @@ public class RaidCompleteTaskCommand extends AAdminRaidCommand {
 	@Override
 	public void showCorrectUsage(CommandSender sender) {
 		super.showCorrectUsage(sender);
-		sender.sendMessage("  §f§o/raid drop [gracz] [taskId] §7- Konczy taska o danym id, jesli takowy istnieje");
+		sender.sendMessage("  §f§o/raid complete-task [gracz] [taskId] §7- Konczy taska o danym id, jesli takowy istnieje");
 	}
 
 }

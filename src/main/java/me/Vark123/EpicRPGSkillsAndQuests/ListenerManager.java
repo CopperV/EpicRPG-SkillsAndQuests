@@ -20,6 +20,7 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.Par
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerBlockedRegionEntryListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.DungeonSystem.Listeners.PlayerMoveOnRespListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Misc.DailyResetListener;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidMobManager;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidBossDeathListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidDamageListener;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Listeners.RaidPartyCreateListener;
@@ -101,8 +102,9 @@ public final class ListenerManager {
 		Bukkit.getPluginManager().registerEvents(new RaidBossDeathListener(), inst);
 		Bukkit.getPluginManager().registerEvents(new RaidsResetListener(), inst);
 		
-
 		Bukkit.getPluginManager().registerEvents(new RaidCustomConditionLoadListener(), inst);
+
+		Bukkit.getPluginManager().registerEvents(RaidMobManager.get(), inst);
 		
 		CalendarEventsApi calendar = Main.getInst().getCalendar();
 		if(calendar.isRegisteredEvent("reset_daily"))
