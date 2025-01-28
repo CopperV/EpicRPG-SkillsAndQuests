@@ -151,7 +151,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 						performAction(_p -> {
 							_p.sendTitle("§a§lAKTUALIZACJA", quest.getDisplay(), 5, 10, 15);
 							_p.playSound(_p, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
-							_p.spawnParticle(Particle.VILLAGER_HAPPY, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+							_p.spawnParticle(Particle.HAPPY_VILLAGER, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 						});
 					} else {
 						boolean comletedAllGroupsFlag = group.getObjective().getLastGroups()
@@ -328,7 +328,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 		performAction(_p -> {
 			_p.sendTitle("§a§lAKTUALIZACJA", quest.getDisplay(), 5, 10, 15);
 			_p.playSound(_p, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
-			_p.spawnParticle(Particle.VILLAGER_HAPPY, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+			_p.spawnParticle(Particle.HAPPY_VILLAGER, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 		});
 		
 		if(objective.getDisplay() != null) {
@@ -377,7 +377,7 @@ public class PlayerRaidQuest extends APlayerQuest {
 		performAction(_p -> {
 			_p.sendTitle("§a§lAKTUALIZACJA", quest.getDisplay(), 5, 10, 15);
 			_p.playSound(_p, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
-			_p.spawnParticle(Particle.VILLAGER_HAPPY, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+			_p.spawnParticle(Particle.HAPPY_VILLAGER, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 		});
 	}
 	

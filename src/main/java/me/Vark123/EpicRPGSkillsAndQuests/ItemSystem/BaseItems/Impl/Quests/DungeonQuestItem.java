@@ -115,7 +115,7 @@ public class DungeonQuestItem extends QuestItem {
 								
 								player.sendTitle("§c§lROZPOCZETO DUNGEON", quest.getDisplay(), 5, 10, 15);
 								player.playSound(player, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-								player.spawnParticle(Particle.TOTEM, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+								player.spawnParticle(Particle.TOTEM_OF_UNDYING, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 							});
 						quest.getTaskGroups().get(1).getEventsByType(EventCall.START)
 							.ifPresent(event -> event.executeEvent(pQuest));
@@ -127,7 +127,7 @@ public class DungeonQuestItem extends QuestItem {
 						
 						p.sendTitle("§c§lROZPOCZALES DUNGEON", quest.getDisplay(), 5, 10, 15);
 						p.playSound(p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-						p.spawnParticle(Particle.TOTEM, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+						p.spawnParticle(Particle.TOTEM_OF_UNDYING, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 					});
 					DungeonController.get().prepareDungeon(pQuest);
 				}

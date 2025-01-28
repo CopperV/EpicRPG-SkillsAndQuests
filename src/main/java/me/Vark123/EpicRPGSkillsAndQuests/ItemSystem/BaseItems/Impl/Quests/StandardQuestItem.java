@@ -101,7 +101,7 @@ public class StandardQuestItem extends QuestItem {
 					
 					p.sendTitle("§e§lROZPOCZALES ZADANIE", quest.getDisplay(), 5, 10, 15);
 					p.playSound(p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-					p.spawnParticle(Particle.TOTEM, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+					p.spawnParticle(Particle.TOTEM_OF_UNDYING, p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 				}
 				break;
 			case YELLOW_TERRACOTTA:

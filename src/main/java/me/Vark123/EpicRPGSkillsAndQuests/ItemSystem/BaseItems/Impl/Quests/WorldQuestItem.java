@@ -105,7 +105,7 @@ public class WorldQuestItem extends QuestItem {
 							qp.getActiveQuests().put(quest, pQuest));
 						player.sendTitle("§d§lROZPOCZETO ZADANIE SWIATOWE", quest.getDisplay(), 5, 10, 15);
 						player.playSound(player, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-						player.spawnParticle(Particle.TOTEM, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+						player.spawnParticle(Particle.TOTEM_OF_UNDYING, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 					});	
 				}
 				break;

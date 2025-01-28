@@ -33,16 +33,16 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 
-import io.github.rysefoxx.inventory.plugin.content.IntelligentItem;
-import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
-import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
-import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import io.lumine.mythic.api.adapters.AbstractLocation;
 import io.lumine.mythic.api.adapters.AbstractWorld;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.spawning.spawners.SpawnerManager;
 import lombok.Getter;
+import me.Vark123.EpicInventory.Content.IntelligentItem;
+import me.Vark123.EpicInventory.Content.InventoryContents;
+import me.Vark123.EpicInventory.Content.InventoryProvider;
+import me.Vark123.EpicInventory.Pagination.EpicInventory;
 import me.Vark123.EpicRPG.Utils.Utils;
 import me.Vark123.EpicRPGSkillsAndQuests.EpicRPGSkillsAndQuestsAPI;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
@@ -54,8 +54,8 @@ import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerQuestImpl.PlayerRaid
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.EventCall;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.QuestEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.Impl.RaidQuest;
-import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IRaidEvent;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.RaidPlayer.RaidPlayerInfo;
+import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.RaidSystem.Interfaces.IRaidEvent;
 
 @Getter
 public final class RaidManager {
@@ -113,7 +113,7 @@ public final class RaidManager {
 					else
 						_p.sendTitle("§6§lROZPOCZETO RAJD", raidQuest.getDisplay(), 5, 10, 15);
 					_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-					_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+					_p.spawnParticle(Particle.TOTEM_OF_UNDYING, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 				});
 				
 				prepareRaid(pQuest, new LinkedList<>(), new LinkedList<>());
@@ -189,7 +189,7 @@ public final class RaidManager {
 					else
 						_p.sendTitle("§6§lKONTYNUACJA RAJDU", raidQuest.getDisplay(), 5, 10, 15);
 					_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-					_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+					_p.spawnParticle(Particle.TOTEM_OF_UNDYING, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 				});
 				
 				prepareRaid(pQuest, strCompletedObjectives, completedGroups);
@@ -532,7 +532,7 @@ public final class RaidManager {
 						.map(objId -> objId.get())
 						.collect(Collectors.toList());
 				int rows = (int) Utils.limitValue(1, 6, (completedObjectives.size() - 2) / 9 + 1);
-				RyseInventory.builder()
+				EpicInventory.builder()
 					.title("§6§lWybierz etap rajdu")
 					.rows(rows)
 					.disableUpdateTask()

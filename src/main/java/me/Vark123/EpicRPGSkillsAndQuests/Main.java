@@ -5,8 +5,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.rysefoxx.inventory.plugin.pagination.InventoryManager;
 import lombok.Getter;
+import me.Vark123.EpicInventory.Pagination.InventoryManager;
 import me.nikl.calendarevents.CalendarEvents;
 import me.nikl.calendarevents.CalendarEventsApi;
 import net.milkbowl.vault.economy.Economy;
@@ -30,7 +30,7 @@ public class Main extends JavaPlugin {
 		
 		inventoryManager = new InventoryManager(inst);
 		inventoryManager.invoke();
-		CalendarEvents calend = (CalendarEvents) Bukkit.getPluginManager().getPlugin("CalendarEvents");
+		CalendarEvents calend = (CalendarEvents) Bukkit.getPluginManager().getPlugin("EpicCalendarEvents");
 		calendar = calend.getApi();
 		
 		CommandManager.setExecutors();

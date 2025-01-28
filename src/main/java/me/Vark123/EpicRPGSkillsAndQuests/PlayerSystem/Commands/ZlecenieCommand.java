@@ -35,7 +35,7 @@ public class ZlecenieCommand implements CommandExecutor {
 				.ifPresent(pQuest -> {
 					p.sendTitle("§e§l ", "§c§lOPUSZCZONO ZLECENIE", 5, 10, 15);
 					p.playSound(p, Sound.ENTITY_BLAZE_HURT, 1, 1);
-					p.spawnParticle(Particle.SMOKE_LARGE, p.getLocation().add(0, 1.25, 0), 20, 0.7, 0.7, 0.7, 0.05);
+					p.spawnParticle(Particle.LARGE_SMOKE, p.getLocation().add(0, 1.25, 0), 20, 0.7, 0.7, 0.7, 0.05);
 					pQuest.removeQuest();
 					ZlecenieController.get().addZlecenieCooldown(p, 20*60*15);
 				});

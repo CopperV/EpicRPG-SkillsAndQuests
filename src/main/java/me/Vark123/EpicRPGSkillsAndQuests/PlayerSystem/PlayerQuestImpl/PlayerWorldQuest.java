@@ -71,7 +71,7 @@ public class PlayerWorldQuest extends APlayerQuest {
 		Bukkit.getOnlinePlayers().forEach(player -> {
 			player.sendTitle("§a§lAKTUALIZACJA", quest.getDisplay(), 5, 10, 15);
 			player.playSound(player, Sound.BLOCK_ANVIL_USE, 1, 1.1f);
-			player.spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+			player.spawnParticle(Particle.HAPPY_VILLAGER, player.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 		});
 	}
 

@@ -67,7 +67,7 @@ public class RaidPlayerBlockedRegionEntryListener implements Listener {
 							Bukkit.getPluginManager().callEvent(event);
 							if(event.isCancelled())
 								return;
-							ManualDamage.doDamage(p, event.getFinalDamage(), event);
+							ManualDamage.tryDoDamage(p, event.getFinalDamage(), event);
 							
 							Location A = e.getTo();
 							Location B = e.getFrom();
@@ -121,7 +121,7 @@ public class RaidPlayerBlockedRegionEntryListener implements Listener {
 							Bukkit.getPluginManager().callEvent(event);
 							if(event.isCancelled())
 								return;
-							ManualDamage.doDamage(p, event.getFinalDamage(), event);
+							ManualDamage.tryDoDamage(p, event.getFinalDamage(), event);
 							
 							e.setCancelled(true);
 						};

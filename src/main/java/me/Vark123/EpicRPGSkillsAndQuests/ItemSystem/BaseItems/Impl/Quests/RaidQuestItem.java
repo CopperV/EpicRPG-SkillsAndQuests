@@ -179,7 +179,7 @@ public class RaidQuestItem extends QuestItem {
 							
 							_p.sendTitle("§6§lDOLACZYLES DO RAJDU", quest.getDisplay(), 5, 10, 15);
 							_p.playSound(_p, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST_FAR, 1, 1);
-							_p.spawnParticle(Particle.TOTEM, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
+							_p.spawnParticle(Particle.TOTEM_OF_UNDYING, _p.getLocation().add(0,1,0), 25, 0.75, 1, 0.75, 0.15);
 						});
 					}
 				}

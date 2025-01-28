@@ -16,13 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
-import io.github.rysefoxx.inventory.anvilgui.AnvilGUI.Builder;
-import io.github.rysefoxx.inventory.anvilgui.AnvilGUI.ResponseAction;
-import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
-import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
-import io.github.rysefoxx.inventory.plugin.enums.InventoryOpenerType;
-import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import lombok.Getter;
+import me.Vark123.EpicInventory.Content.InventoryContents;
+import me.Vark123.EpicInventory.Content.InventoryProvider;
+import me.Vark123.EpicInventory.Enums.InventoryOpenerType;
+import me.Vark123.EpicInventory.Pagination.EpicInventory;
 import me.Vark123.EpicRPGSkillsAndQuests.FileManager;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
@@ -41,6 +39,8 @@ import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.GiveTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.KillTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.PlayerKillTask;
 import me.Vark123.EpicRPGSkillsAndQuests.QuestSystem.TaskSystem.Impl.PointsTask;
+import net.wesjd.anvilgui.AnvilGUI.Builder;
+import net.wesjd.anvilgui.AnvilGUI.ResponseAction;
 
 @Getter
 public final class GMMenuManager {
@@ -156,7 +156,7 @@ public final class GMMenuManager {
 		int size = qp.getActiveQuests().size()/9 + 1;
 		if(size > 6)
 			size = 6;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§7[§4§lGM§7] §a§lZadania §7"+player.getName())
 			.rows(size)
 			.disableUpdateTask()
@@ -173,7 +173,7 @@ public final class GMMenuManager {
 		int size = pQuest.getTasks().size() / 9 + 2;
 		if(size > 6)
 			size = 6;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§7[§4§lGM§7] §a§lZadania §7"+player.getName())
 			.rows(size)
 			.disableUpdateTask()
@@ -187,7 +187,7 @@ public final class GMMenuManager {
 		Optional<QuestPlayer> oQp = PlayerManager.get().getQuestPlayer(player);
 		if(oQp.isEmpty())
 			return;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§7[§4§lGM§7] §a§lZadania §7"+player.getName())
 			.rows(1)
 			.disableUpdateTask()
@@ -202,7 +202,7 @@ public final class GMMenuManager {
 		Optional<QuestPlayer> oQp = PlayerManager.get().getQuestPlayer(player);
 		if(oQp.isEmpty())
 			return;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§7[§4§lGM§7] §a§lZadania §7"+player.getName())
 			.type(InventoryOpenerType.ANVIL)
 			.disableUpdateTask()

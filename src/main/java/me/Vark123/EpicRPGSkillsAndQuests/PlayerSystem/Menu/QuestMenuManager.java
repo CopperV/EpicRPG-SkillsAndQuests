@@ -12,10 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.tr7zw.nbtapi.NBTItem;
-import io.github.rysefoxx.inventory.plugin.content.InventoryContents;
-import io.github.rysefoxx.inventory.plugin.content.InventoryProvider;
-import io.github.rysefoxx.inventory.plugin.pagination.RyseInventory;
 import lombok.Getter;
+import me.Vark123.EpicInventory.Content.InventoryContents;
+import me.Vark123.EpicInventory.Content.InventoryProvider;
+import me.Vark123.EpicInventory.Pagination.EpicInventory;
 import me.Vark123.EpicRPGSkillsAndQuests.Main;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.APlayerQuest;
 import me.Vark123.EpicRPGSkillsAndQuests.PlayerSystem.PlayerManager;
@@ -55,7 +55,7 @@ public final class QuestMenuManager {
 		int size = qp.getActiveQuests().size()/9 + 1;
 		if(size > 6)
 			size = 6;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§a§lZadania §7"+player.getName())
 			.rows(size)
 			.disableUpdateTask()
@@ -73,7 +73,7 @@ public final class QuestMenuManager {
 		int size = pQuest.getTasks().size() / 9 + 2;
 		if(size > 6)
 			size = 6;
-		RyseInventory.builder()
+		EpicInventory.builder()
 			.title("§e§lZadanie §r"+pQuest.getQuest().getDisplay())
 			.rows(size)
 			.disableUpdateTask()
